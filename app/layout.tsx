@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "WhatAmIAI",
-  description: "A Gospel-first reflection tool for noticing what is growing, what is hurting, what is hidden, and where you may feel called to serve.",
+  description: "Seven quick questions to help you reflect, notice patterns, and turn your answers into a thoughtful prompt for any AI. No labels, no accounts.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
