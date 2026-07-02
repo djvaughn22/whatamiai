@@ -109,11 +109,31 @@ const QUESTIONS: Question[] = [
 type Answers = Record<string, string>;
 type Stage = "home" | "form" | "done";
 
+function MirrorView({ md }: { md: string }) {
+  return (
+    <div>
+      {md.split("\n").map((ln, i) => {
+        const t = ln.trim();
+        if (!t) return null;
+        if (t === "✝️ ❤️ 🙏") return <p key={i} style={{ textAlign: "center", fontSize: 18, margin: "0 0 8px" }}>{t}</p>;
+        if (t === "---") return <hr key={i} style={{ border: "none", borderTop: "1px solid #262626", margin: "12px 0" }} />;
+        if (t.startsWith("### ")) return <p key={i} style={{ fontWeight: 900, color: "#A78BFA", margin: "8px 0 2px", fontSize: 15 }}>{t.slice(4)}</p>;
+        if (t.startsWith("## ")) return <p key={i} style={{ fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.14em", color: "#8A8078", fontSize: 12, margin: "8px 0 4px" }}>{t.slice(3)}</p>;
+        if (t.startsWith('"')) return <p key={i} style={{ fontStyle: "italic", color: "#F5F0E8", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
+        if (t === "Start reading:") return <p key={i} style={{ fontSize: 12, fontWeight: 700, color: "#8A8078", margin: "4px 0 0" }}>{t}</p>;
+        return <p key={i} style={{ color: "#F5F0E8", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
+      })}
+    </div>
+  );
+}
+
 export default function WhatAmIAIPage() {
   const [dark, setDark] = useState(true);
   const [stage, setStage] = useState<Stage>("home");
   const [answers, setAnswers] = useState<Answers>({});
   const [copied, setCopied] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiResult, setAiResult] = useState("");
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("wai-theme");
@@ -132,6 +152,33 @@ export default function WhatAmIAIPage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
     }
   }, [answers]);
+
+  // When the user reaches results, ask the Open Mirror AI for a real Bible-based reflection.
+  useEffect(() => {
+    if (stage !== "done") return;
+    const a = answers;
+    const parts: string[] = [];
+    if (a.focus) parts.push(`my energy is on ${a.focus.toLowerCase()}`);
+    if (a.best) parts.push(`I feel most myself ${a.best.toLowerCase()}`);
+    if (a.drain) parts.push(`${a.drain.toLowerCase()} drains me`);
+    if (a.strength) parts.push(`people come to me for ${a.strength.toLowerCase()}`);
+    if (a.value) parts.push(`I value ${a.value.toLowerCase()}`);
+    if (a.stuck) parts.push(`I keep putting off ${a.stuck.toLowerCase()}`);
+    if (a.next?.trim()) parts.push(`I'd try: ${a.next.trim()}`);
+    const problem = parts.join(". ").slice(0, 240);
+    if (!problem) return;
+    setAiLoading(true); setAiResult("");
+    fetch("https://openmirrorllc.com/api/reflect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ problem }),
+    })
+      .then((r) => r.json())
+      .then((d) => { if (d?.reflection) setAiResult(d.reflection); })
+      .catch(() => {})
+      .finally(() => setAiLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage]);
 
 
   const setAnswer = (id: string, value: string) =>
@@ -288,22 +335,38 @@ export default function WhatAmIAIPage() {
           </p>
         </div>
 
-        {observations().length > 0 && (
-          <div style={{ background: card, border: `2px solid ${border}`, borderRadius: 20, padding: "24px 26px", marginBottom: 22 }}>
-            <p style={{ fontSize: 13, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 14px" }}>Your mirror 🪞</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {observations().map((o, i) => (
-                <div key={i} style={{ display: "flex", gap: 10 }}>
-                  <span style={{ color: BRAND, fontWeight: 900, flexShrink: 0 }}>•</span>
-                  <p style={{ fontSize: 15.5, color: text, lineHeight: 1.6, margin: 0 }}>{o}</p>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 13, color: sub, margin: "16px 0 0", lineHeight: 1.6 }}>
-              That&apos;s a reflection, not a verdict — you&apos;re not a category. Want to go deeper? Take it to an AI below. 👇
-            </p>
-          </div>
-        )}
+        <div style={{ background: card, border: `2px solid ${border}`, borderRadius: 20, padding: "24px 26px", marginBottom: 22 }}>
+          <p style={{ fontSize: 13, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 14px" }}>Your mirror 🪞</p>
+
+          {aiLoading && (
+            <p style={{ fontSize: 15, color: sub, margin: 0 }}>Reading your reflection and finding a verse or two…</p>
+          )}
+
+          {!aiLoading && aiResult && (
+            <>
+              <MirrorView md={aiResult} />
+              <p style={{ fontSize: 13, color: sub, margin: "16px 0 0", lineHeight: 1.6 }}>
+                Scripture matched to your answers — read the chapters in context. A reflection, not a verdict; you&apos;re not a category.
+              </p>
+            </>
+          )}
+
+          {!aiLoading && !aiResult && observations().length > 0 && (
+            <>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {observations().map((o, i) => (
+                  <div key={i} style={{ display: "flex", gap: 10 }}>
+                    <span style={{ color: BRAND, fontWeight: 900, flexShrink: 0 }}>•</span>
+                    <p style={{ fontSize: 15.5, color: text, lineHeight: 1.6, margin: 0 }}>{o}</p>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize: 13, color: sub, margin: "16px 0 0", lineHeight: 1.6 }}>
+                That&apos;s a reflection, not a verdict — you&apos;re not a category. Take it deeper with AI below. 👇
+              </p>
+            </>
+          )}
+        </div>
 
         <div style={{ background: card, border: `2px solid ${BRAND}`, borderRadius: 20, padding: "26px", marginBottom: 28 }}>
           <p style={{ fontSize: 13, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>Take it to AI</p>
