@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import OpenMirrorNav from "./OpenMirrorNav";
 
 const STORAGE_KEY = "wai-reflection-v2";
 const BRAND = "#A78BFA";
@@ -133,6 +132,11 @@ export default function WhatAmIAIPage() {
     }
   }, [answers]);
 
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    localStorage.setItem("wai-theme", next ? "dark" : "light");
+  };
 
   const setAnswer = (id: string, value: string) =>
     setAnswers((a) => ({ ...a, [id]: value }));
@@ -175,19 +179,30 @@ export default function WhatAmIAIPage() {
     fontFamily: "system-ui, -apple-system, sans-serif",
   };
 
+  const themeBtn = (
+    <button
+      onClick={toggle}
+      aria-label="Toggle theme"
+      style={{ background: "none", border: `1px solid ${border}`, borderRadius: 50, padding: "5px 12px", fontSize: 12, cursor: "pointer", color: sub }}
+    >
+      {dark ? "☀️" : "🌙"}
+    </button>
+  );
 
   if (stage === "home")
     return (
       <main style={shell}>
-        <OpenMirrorNav />
         <div style={{ maxWidth: 640, margin: "0 auto", padding: "36px 24px 80px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 56, paddingBottom: 18, borderBottom: `1px solid ${border}` }}>
+            <a href="https://openmirrorllc.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.12em", color: sub, textDecoration: "none" }}>Open Mirror LLC</a>
+            {themeBtn}
+          </div>
 
           <div style={{ textAlign: "center", marginBottom: 44 }}>
             <div style={{ fontSize: 52, marginBottom: 20 }}>🪞</div>
-            <h1 style={{ fontSize: 46, fontWeight: 900, color: text, margin: "0 0 12px", lineHeight: 1.05 }}>WhatAmIAI</h1>
-            <p style={{ fontSize: 18, fontWeight: 800, color: BRAND, margin: "0 0 16px", lineHeight: 1.3 }}>Don&apos;t put me in a box. Just help me think.</p>
-            <p style={{ fontSize: 18, color: sub, lineHeight: 1.7, maxWidth: 460, margin: "0 auto 32px" }}>
-              Seven quick questions — mostly taps, not typing. Then turn your answers into a reflection prompt for any AI. No labels, no accounts, no algorithms.
+            <h1 style={{ fontSize: 46, fontWeight: 900, color: text, margin: "0 0 16px", lineHeight: 1.05 }}>WhatAmIAI</h1>
+            <p style={{ fontSize: 19, color: sub, lineHeight: 1.7, maxWidth: 460, margin: "0 auto 32px" }}>
+              Seven quick questions. Mostly taps, not typing. Then turn your answers into a reflection prompt for any AI. No labels, no accounts, no algorithms.
             </p>
             <button onClick={() => setStage("form")} style={{ background: BRAND, color: "#0C0C0C", border: "none", borderRadius: 50, padding: "15px 34px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
               {answeredCount > 0 ? "Continue →" : "Start — takes a minute →"}
@@ -209,11 +224,11 @@ export default function WhatAmIAIPage() {
   if (stage === "form")
     return (
       <main style={shell}>
-        <OpenMirrorNav />
         <div style={{ maxWidth: 620, margin: "0 auto", padding: "36px 24px 80px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 36 }}>
             <button onClick={() => setStage("home")} style={{ background: "none", border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", color: sub }}>← Back</button>
             <span style={{ fontSize: 13, fontWeight: 700, color: sub }}>{answeredCount} / {QUESTIONS.length}</span>
+            {themeBtn}
           </div>
 
           <h2 style={{ fontSize: 26, fontWeight: 900, color: text, lineHeight: 1.25, marginBottom: 8 }}>A few honest questions</h2>
@@ -265,7 +280,6 @@ export default function WhatAmIAIPage() {
   // stage === "done"
   return (
     <main style={shell}>
-      <OpenMirrorNav />
       <div style={{ maxWidth: 620, margin: "0 auto", padding: "48px 24px 80px" }}>
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <div style={{ fontSize: 52, marginBottom: 20 }}>✅</div>
@@ -290,16 +304,6 @@ export default function WhatAmIAIPage() {
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
-          <button
-            onClick={() => {
-              const d = { title: "WhatAmIAI", text: "Don't put me in a box. Just help me think — 7 quick questions, then reflect with any AI.", url: "https://whatamiai.com" };
-              if (typeof navigator !== "undefined" && navigator.share) navigator.share(d).catch(() => {});
-              else if (typeof navigator !== "undefined") navigator.clipboard.writeText(d.url);
-            }}
-            style={{ background: "none", border: `2px solid ${border}`, borderRadius: 50, padding: "13px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", color: text }}
-          >
-            Share WhatAmIAI
-          </button>
           <button onClick={() => setStage("form")} style={{ background: "none", border: `2px solid ${border}`, borderRadius: 50, padding: "13px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", color: sub }}>Edit answers</button>
           <button onClick={reset} style={{ background: "none", border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", color: sub, textDecoration: "underline" }}>Start fresh</button>
         </div>
