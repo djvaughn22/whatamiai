@@ -139,6 +139,19 @@ export default function WhatAmIAIPage() {
 
   const answeredCount = QUESTIONS.filter((q) => (answers[q.id] ?? "").trim()).length;
 
+  const observations = (): string[] => {
+    const a = answers;
+    const out: string[] = [];
+    if (a.best?.trim()) out.push(`You feel most like yourself when you're ${a.best.toLowerCase()} — that's worth protecting.`);
+    if (a.strength?.trim()) out.push(`People come to you for ${a.strength.toLowerCase()}. That's a real gift, even if it feels ordinary to you.`);
+    if (a.drain?.trim()) out.push(`${a.drain} wears you down faster than most things — just naming it is half the battle.`);
+    if (a.value?.trim()) out.push(`What you're really after right now is ${a.value.toLowerCase()}. Let that steer the small decisions too.`);
+    if (a.focus?.trim()) out.push(`Most of your energy is going toward ${a.focus.toLowerCase()} these days — is that where you want it?`);
+    if (a.stuck?.trim()) out.push(`You've been putting off ${a.stuck.toLowerCase()} — maybe this week is the week for one small step.`);
+    if (a.next?.trim()) out.push(`And that thing you'd try if nothing held you back — "${a.next.trim()}" — hold onto it.`);
+    return out;
+  };
+
   const buildAIPrompt = () => {
     const lines = QUESTIONS.filter((q) => (answers[q.id] ?? "").trim())
       .map((q) => `Q: ${q.label}\nA: ${answers[q.id].trim()}`)
@@ -271,9 +284,26 @@ export default function WhatAmIAIPage() {
           <div style={{ fontSize: 52, marginBottom: 20 }}>✅</div>
           <h1 style={{ fontSize: 34, fontWeight: 900, color: text, marginBottom: 14 }}>Nice — that's you, on paper.</h1>
           <p style={{ fontSize: 17, color: sub, lineHeight: 1.7, maxWidth: 440, margin: "0 auto" }}>
-            Copy your answers as a ready-made prompt and paste it into any AI to go deeper.
+            Here&apos;s a quick reflection on what you shared — then take it deeper with any AI.
           </p>
         </div>
+
+        {observations().length > 0 && (
+          <div style={{ background: card, border: `2px solid ${border}`, borderRadius: 20, padding: "24px 26px", marginBottom: 22 }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 14px" }}>Your mirror 🪞</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {observations().map((o, i) => (
+                <div key={i} style={{ display: "flex", gap: 10 }}>
+                  <span style={{ color: BRAND, fontWeight: 900, flexShrink: 0 }}>•</span>
+                  <p style={{ fontSize: 15.5, color: text, lineHeight: 1.6, margin: 0 }}>{o}</p>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13, color: sub, margin: "16px 0 0", lineHeight: 1.6 }}>
+              That&apos;s a reflection, not a verdict — you&apos;re not a category. Want to go deeper? Take it to an AI below. 👇
+            </p>
+          </div>
+        )}
 
         <div style={{ background: card, border: `2px solid ${BRAND}`, borderRadius: 20, padding: "26px", marginBottom: 28 }}>
           <p style={{ fontSize: 13, fontWeight: 800, color: BRAND, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 12px" }}>Take it to AI</p>
