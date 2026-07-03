@@ -116,12 +116,12 @@ function MirrorView({ md }: { md: string }) {
         const t = ln.trim();
         if (!t) return null;
         if (t === "✝️ ❤️ 🙏") return <p key={i} style={{ textAlign: "center", fontSize: 18, margin: "0 0 8px" }}>{t}</p>;
-        if (t === "---") return <hr key={i} style={{ border: "none", borderTop: "1px solid #262626", margin: "12px 0" }} />;
+        if (t === "---") return <hr key={i} style={{ border: "none", borderTop: "1px solid #26324c", margin: "12px 0" }} />;
         if (t.startsWith("### ")) return <p key={i} style={{ fontWeight: 900, color: "#A78BFA", margin: "8px 0 2px", fontSize: 15 }}>{t.slice(4)}</p>;
         if (t.startsWith("## ")) return <p key={i} style={{ fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.14em", color: "#8A8078", fontSize: 12, margin: "8px 0 4px" }}>{t.slice(3)}</p>;
-        if (t.startsWith('"')) return <p key={i} style={{ fontStyle: "italic", color: "#F5F0E8", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
+        if (t.startsWith('"')) return <p key={i} style={{ fontStyle: "italic", color: "#e8edf5", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
         if (t === "Start reading:") return <p key={i} style={{ fontSize: 12, fontWeight: 700, color: "#8A8078", margin: "4px 0 0" }}>{t}</p>;
-        return <p key={i} style={{ color: "#F5F0E8", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
+        return <p key={i} style={{ color: "#e8edf5", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
       })}
     </div>
   );
@@ -222,11 +222,11 @@ export default function WhatAmIAIPage() {
     setStage("home");
   };
 
-  const bg = dark ? "#0C0C0C" : "#FEFCF9";
-  const text = dark ? "#F5F0E8" : "#1C1917";
+  const bg = dark ? "#0b1220" : "#FEFCF9";
+  const text = dark ? "#e8edf5" : "#1C1917";
   const sub = dark ? "#8A8078" : "#57534E";
   const card = dark ? "#141414" : "#FFFFFF";
-  const border = dark ? "#262626" : "#E7E5E4";
+  const border = dark ? "#26324c" : "#E7E5E4";
   const inputBg = dark ? "#1A1A1A" : "#F9F9F7";
 
   const shell: React.CSSProperties = {
@@ -249,7 +249,7 @@ export default function WhatAmIAIPage() {
             <p style={{ fontSize: 18, color: sub, lineHeight: 1.7, maxWidth: 460, margin: "0 auto 32px" }}>
               Seven quick questions — mostly taps, not typing. Then turn your answers into a reflection prompt for any AI. No labels, no accounts, no algorithms.
             </p>
-            <button onClick={() => setStage("form")} style={{ background: BRAND, color: "#0C0C0C", border: "none", borderRadius: 50, padding: "15px 34px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
+            <button onClick={() => setStage("form")} style={{ background: BRAND, color: "#0b1220", border: "none", borderRadius: 50, padding: "15px 34px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>
               {answeredCount > 0 ? "Continue →" : "Start — takes a minute →"}
             </button>
             {answeredCount > 0 && (
@@ -314,7 +314,7 @@ export default function WhatAmIAIPage() {
           <button
             onClick={() => setStage("done")}
             disabled={answeredCount === 0}
-            style={{ width: "100%", background: answeredCount === 0 ? border : BRAND, color: answeredCount === 0 ? sub : "#0C0C0C", border: "none", borderRadius: 50, padding: "16px", fontSize: 16, fontWeight: 800, cursor: answeredCount === 0 ? "not-allowed" : "pointer", marginTop: 12 }}
+            style={{ width: "100%", background: answeredCount === 0 ? border : BRAND, color: answeredCount === 0 ? sub : "#0b1220", border: "none", borderRadius: 50, padding: "16px", fontSize: 16, fontWeight: 800, cursor: answeredCount === 0 ? "not-allowed" : "pointer", marginTop: 12 }}
           >
             See my reflection →
           </button>
@@ -373,7 +373,7 @@ export default function WhatAmIAIPage() {
           <p style={{ fontSize: 15, color: sub, lineHeight: 1.7, margin: "0 0 20px" }}>
             Paste it into Claude or ChatGPT and ask it to help you notice patterns and ask follow-up questions.
           </p>
-          <button onClick={copyPrompt} style={{ background: BRAND, color: "#0C0C0C", border: "none", borderRadius: 50, padding: "13px 28px", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
+          <button onClick={copyPrompt} style={{ background: BRAND, color: "#0b1220", border: "none", borderRadius: 50, padding: "13px 28px", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
             {copied ? "✓ Copied!" : "Copy AI Prompt"}
           </button>
           <div style={{ display: "flex", gap: 16, marginTop: 18, flexWrap: "wrap" }}>
