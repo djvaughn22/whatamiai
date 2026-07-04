@@ -118,9 +118,9 @@ function MirrorView({ md }: { md: string }) {
         if (t === "✝️ ❤️ 🙏") return <p key={i} style={{ textAlign: "center", fontSize: 18, margin: "0 0 8px" }}>{t}</p>;
         if (t === "---") return <hr key={i} style={{ border: "none", borderTop: "1px solid #26324c", margin: "12px 0" }} />;
         if (t.startsWith("### ")) return <p key={i} style={{ fontWeight: 900, color: "#A78BFA", margin: "8px 0 2px", fontSize: 15 }}>{t.slice(4)}</p>;
-        if (t.startsWith("## ")) return <p key={i} style={{ fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.14em", color: "#8A8078", fontSize: 12, margin: "8px 0 4px" }}>{t.slice(3)}</p>;
+        if (t.startsWith("## ")) return <p key={i} style={{ fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.14em", color: "#94a3b8", fontSize: 12, margin: "8px 0 4px" }}>{t.slice(3)}</p>;
         if (t.startsWith('"')) return <p key={i} style={{ fontStyle: "italic", color: "#e8edf5", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
-        if (t === "Start reading:") return <p key={i} style={{ fontSize: 12, fontWeight: 700, color: "#8A8078", margin: "4px 0 0" }}>{t}</p>;
+        if (t === "Start reading:") return <p key={i} style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", margin: "4px 0 0" }}>{t}</p>;
         return <p key={i} style={{ color: "#e8edf5", lineHeight: 1.6, margin: "2px 0", fontSize: 15 }}>{t}</p>;
       })}
     </div>
@@ -224,7 +224,7 @@ export default function WhatAmIAIPage() {
 
   const bg = dark ? "#0b1220" : "#FEFCF9";
   const text = dark ? "#e8edf5" : "#1C1917";
-  const sub = dark ? "#8A8078" : "#57534E";
+  const sub = dark ? "#94a3b8" : "#57534E";
   const card = dark ? "#141414" : "#FFFFFF";
   const border = dark ? "#26324c" : "#E7E5E4";
   const inputBg = dark ? "#1A1A1A" : "#F9F9F7";
