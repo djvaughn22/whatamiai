@@ -155,7 +155,7 @@ export default function WhatAmIAIPage() {
       .map((q) => `Q: ${q.label}\nA: ${answers[q.id].trim()}`)
       .join("\n\n");
     if (!lines) return "";
-    return `I just did a quick self-reflection. Based on my answers below, help me notice patterns, ask a few thoughtful follow-up questions, and gently point out anything I might be missing. Don't put me in a box or tell me who I am — just help me think.\n\nHere's what I said:\n\n${lines}\n\nHelp me understand myself a little better and think about what might be worth trying next.`;
+    return `I just did a quick self-reflection. Based on my answers below, help me notice patterns, ask a few thoughtful follow-up questions, and gently point out anything I might be missing. Don't put me in a box or tell me who I am — just help me think.\n\nGive me wise, grounded advice — timeless, proverb-style wisdom: patience, honesty, humility, gratitude, hope, forgiveness, and loving people well. Practical, not preachy.\n\nHere's what I said:\n\n${lines}\n\nHelp me understand myself a little better and think about what might be worth trying next.`;
   };
 
   const copyPrompt = () => {
