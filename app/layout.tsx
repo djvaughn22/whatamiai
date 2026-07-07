@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import OpenMirrorFooter from "./OpenMirrorFooter";
+import OpenMirrorNav from "./OpenMirrorNav";
 
 export const metadata: Metadata = {
   title: "WhatAmIAI",
@@ -11,6 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <OpenMirrorNav site="WhatAmIAI.com" />
         {children}
         <OpenMirrorFooter siteName="WhatAmIAI.com" />
       </body>

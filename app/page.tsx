@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import OpenMirrorNav from "./OpenMirrorNav";
 
 const STORAGE_KEY = "wai-reflection-v2";
 const BRAND = "#A78BFA";
@@ -191,7 +190,6 @@ export default function WhatAmIAIPage() {
   if (stage === "home")
     return (
       <main style={shell}>
-        <OpenMirrorNav />
         <div style={{ maxWidth: 640, margin: "0 auto", padding: "36px 24px 80px" }}>
 
           <div style={{ textAlign: "center", marginBottom: 44 }}>
@@ -221,7 +219,6 @@ export default function WhatAmIAIPage() {
   if (stage === "form")
     return (
       <main style={shell}>
-        <OpenMirrorNav />
         <div style={{ maxWidth: 620, margin: "0 auto", padding: "36px 24px 80px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 36 }}>
             <button onClick={() => setStage("home")} style={{ background: "none", border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", color: sub }}>← Back</button>
@@ -277,7 +274,6 @@ export default function WhatAmIAIPage() {
   // stage === "done"
   return (
     <main style={shell}>
-      <OpenMirrorNav />
       <div style={{ maxWidth: 620, margin: "0 auto", padding: "48px 24px 80px" }}>
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <div style={{ fontSize: 52, marginBottom: 20 }}>✅</div>
