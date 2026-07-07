@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 
 const STORAGE_KEY = "wai-reflection-v2";
-const BRAND = "#A78BFA";
+const BRAND = "#E879F9";
 
 type Question = {
   id: string;
@@ -115,15 +115,19 @@ export default function WhatAmIAIPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("wai-theme");
-    // Reading persisted state after hydration is intentional and safe here.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (savedTheme) setDark(savedTheme === "dark");
+    // Follow the family ☀️/🌙 toggle in the Open Mirror bar.
+    const follow = () =>
+      setDark(document.documentElement.dataset.omTheme !== "light");
+    follow();
+    window.addEventListener("om-theme", follow);
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       try { setAnswers(JSON.parse(saved)); } catch {}
     }
+
+    return () => window.removeEventListener("om-theme", follow);
   }, []);
 
   useEffect(() => {
@@ -194,7 +198,7 @@ export default function WhatAmIAIPage() {
 
           <div style={{ textAlign: "center", marginBottom: 44 }}>
             <div style={{ fontSize: 52, marginBottom: 20 }}>🪞</div>
-            <h1 style={{ fontSize: 46, fontWeight: 900, color: text, margin: "0 0 12px", lineHeight: 1.05 }}>WhatAmIAI</h1>
+            <h1 style={{ fontSize: 46, fontWeight: 900, color: text, margin: "0 0 12px", lineHeight: 1.05 }}>WhatAmIAI<span style={{ color: BRAND }}>.com</span></h1>
             <p style={{ fontSize: 18, fontWeight: 800, color: BRAND, margin: "0 0 16px", lineHeight: 1.3 }}>Don&apos;t put me in a box. Just help me think.</p>
             <p style={{ fontSize: 18, color: sub, lineHeight: 1.7, maxWidth: 460, margin: "0 auto 32px" }}>
               Seven quick questions — mostly taps, not typing. Then turn your answers into a reflection prompt for any AI. No labels, no accounts, no algorithms.
