@@ -1,6 +1,8 @@
 # WhatAmIAI (whatamiai.com)
-Secular self-reflection: 7 quick questions → reflection prompt for any AI. Accent: **#E879F9**.
-- The copy-to-AI prompt asks for "timeless, proverb-style wisdom … practical, not preachy" — keep that line (wise, gospel-pleasing, never labeled).
+Secular self-reflection, three modes, all local + deterministic. Accent: **#E879F9**.
+- **Modes:** `/mirror` (paste your own AI prompts → pattern analysis), `/situation` (one thing, thought through), `/patterns` (broader assessment). `/saved` lists local saves + combined view.
+- **Engines are rule-based** (`app/lib/*Engine.ts`): every observation traces to an answer or matched prompts. No hidden scoring, no personality types, no paid APIs. Humble language only ("one possibility worth considering…", never "you are definitely…").
+- **Privacy is a feature:** pasted prompts live in sessionStorage only; drafts/saves in localStorage; answers never in URLs, logs, or analytics. Safety regexes (`app/lib/safety.ts`) interrupt with crisis resources — keep them ahead of reflection output.
 - No labels/boxes for the user; bridges to CrossHeartPray for the faith version.
 
 ## Open Mirror family rules

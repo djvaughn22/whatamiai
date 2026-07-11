@@ -125,3 +125,48 @@ a[href]:hover {
   color: var(--om-ink);
 }
 /* OPEN MIRROR FAMILY STYLE OVERRIDE END */
+
+/* WhatAmIAI: accessibility + print */
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #e879f9;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  button:not([disabled]):hover,
+  a[href]:hover {
+    transform: none !important;
+  }
+}
+
+/* Result pages print clean: white paper, dark text, no chrome or buttons. */
+@media print {
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body,
+  main,
+  main * {
+    background: #ffffff !important;
+    color: #111111 !important;
+    border-color: #cccccc !important;
+    box-shadow: none !important;
+  }
+  .print-area p[style],
+  .print-area li[style] {
+    color: #111111 !important;
+  }
+}

@@ -5,7 +5,8 @@ import OpenMirrorNav from "./OpenMirrorNav";
 
 export const metadata: Metadata = {
   title: "WhatAmIAI",
-  description: "Seven quick questions to help you reflect, notice patterns, and turn your answers into a thoughtful prompt for any AI. No labels, no accounts.",
+  description:
+    "Take an honest look at where you are. Analyze your own AI prompts, think through one situation, or explore your patterns — guided reflection that stays on your device. No labels, no accounts.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
