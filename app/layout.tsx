@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import OpenMirrorFooter from "./OpenMirrorFooter";
 import OpenMirrorNav from "./OpenMirrorNav";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "WhatAmIAI",
@@ -16,6 +17,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OpenMirrorNav site="WhatAmIAI.com" />
         {children}
         <OpenMirrorFooter siteName="WhatAmIAI.com" accent="#E879F9" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-09TFJRG35S"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-09TFJRG35S');`}
+        </Script>
       </body>
     </html>
   );
