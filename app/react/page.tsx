@@ -37,9 +37,7 @@ function LeanCard({ pal, tallies }: { pal: Palette; tallies: StyleTallies }) {
       </p>
       <p style={{ fontSize: 14.5, color: pal.text, lineHeight: 1.65, margin: "0 0 10px" }}>{info.read}</p>
       <p style={{ fontSize: 14.5, color: pal.text, lineHeight: 1.65, margin: "0 0 10px" }}>{info.growth}</p>
-      <p style={{ fontSize: 13.5, color: pal.sub, lineHeight: 1.6, margin: 0 }}>
-        “{info.verse.text}” — {info.verse.ref}
-      </p>
+      <p style={{ fontSize: 13.5, color: pal.sub, lineHeight: 1.6, margin: 0 }}>{info.counsel}</p>
       <p style={{ fontSize: 12.5, color: pal.sub, lineHeight: 1.6, margin: "10px 0 0" }}>
         A lean is a habit, not an identity — it describes your taps here, and habits can be retrained.
       </p>
@@ -132,10 +130,13 @@ export default function ReactPage() {
 
         <Card pal={pal} style={{ marginBottom: 14 }}>
           <Eyebrow pal={pal}>Counsel</Eyebrow>
-          <p style={{ fontSize: 15.5, color: pal.text, lineHeight: 1.65, margin: "0 0 8px" }}>
-            “{s.verse.text}” — <strong>{s.verse.ref}</strong>
+          <p style={{ fontSize: 15.5, color: pal.text, lineHeight: 1.65, margin: "0 0 10px" }}>{s.counsel}</p>
+          <p style={{ fontSize: 13, color: pal.sub, lineHeight: 1.6, margin: 0 }}>
+            Counsel like this has a deep source.{" "}
+            <a href="https://crossheartpray.com" target="_blank" rel="noopener noreferrer" style={{ color: pal.brand, fontWeight: 800, textDecoration: "none" }}>
+              CrossHeartPray →
+            </a>
           </p>
-          <p style={{ fontSize: 14, color: pal.sub, lineHeight: 1.65, margin: 0 }}>{s.verse.principle}</p>
         </Card>
 
         <LeanCard pal={pal} tallies={progress.tallies} />
@@ -149,7 +150,7 @@ export default function ReactPage() {
         </div>
         {flash && <p style={{ fontSize: 13.5, color: pal.brand, fontWeight: 800, marginTop: 12 }}>{flash}</p>}
         <p style={{ fontSize: 12.5, color: pal.sub, marginTop: 14, lineHeight: 1.6 }}>
-          The AI prompt includes ground rules: positive, practical, Bible-based where it fits, no labels, real help first if anything is unsafe.
+          The AI prompt includes ground rules: positive, practical, grace-first, no labels, real help first if anything is unsafe.
         </p>
         <SafetyFooter pal={pal} />
       </Shell>

@@ -1,7 +1,9 @@
 // How Do I React? — a deck of real-life scenario cards.
 // Tap your honest first move, get a no-shame read on what it costs and
-// gains, a steadier script, and Scripture-based counsel. After three or
-// more cards, the picks reveal a reaction lean — the blind-spot finder.
+// gains, a steadier script, and counsel that is gospel-shaped but plain —
+// no citations on-page; a quiet CrossHeartPray link carries people to the
+// source. After three or more cards, the picks reveal a reaction lean —
+// the blind-spot finder.
 // All deterministic, all local. No scenario involves abuse or danger;
 // those get real resources, not practice cards.
 
@@ -23,7 +25,7 @@ export type Scenario = {
   options: ReactionOption[]; // exactly 4, one per style, order varies by card
   better: string; // the steadier way, concrete
   script: string; // words you could actually say
-  verse: { ref: string; text: string; principle: string };
+  counsel: string; // gospel-shaped, plain language, no citations
 };
 
 export const SCENARIOS: Scenario[] = [
@@ -41,7 +43,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Build a release valve you decide on ahead of time — a long exhale and one line like “not my cargo.” Rage on the road is the clearest case there is: the offense lasts two seconds, the reaction is the only part you keep.",
     script: "To yourself, out loud if it helps: “They drive their car. I drive mine. Done.”",
-    verse: { ref: "Proverbs 19:11", text: "Good sense makes one slow to anger, and it is his glory to overlook an offense.", principle: "Overlooking a stranger's offense isn't weakness — Scripture calls it your glory." },
+    counsel: "You'll never meet that driver again, but you live with your own spirit all day. Letting an offense go isn't weakness — it's the quiet strength of a person at peace. Grace given to a stranger costs nothing and buys back your whole drive.",
   },
   {
     id: "credit",
@@ -57,7 +59,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Two moves: in the meeting, attach yourself to the idea with detail only its author would have. Afterward, go direct and private — most credit-stealing dies when it's named calmly by someone unafraid to name it.",
     script: "Privately: “When you presented the idea I shared with you last week, I didn't hear my name. I want to assume that wasn't intentional — but I need it not to happen again.”",
-    verse: { ref: "Matthew 18:15", text: "If your brother sins against you, go, show him his fault between you and him alone.", principle: "Direct and private first — the biblical order for handling an offense is also the one that works." },
+    counsel: "Handle it the way you'd want your own worst moment handled — directly, privately, and with a chance to make it right. That's not soft; it's the strongest and fairest move in the room, and it usually wins back the person, not just the point.",
   },
   {
     id: "kid-meltdown",
@@ -73,7 +75,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "The audience is the trap — you start parenting for the strangers instead of the child. Decide now that onlookers get zero votes. Kneel, lower your voice as theirs rises, name the feeling, keep the no.",
     script: "Low and calm: “You're really upset. It's okay to be upset. The answer is still no. I'm right here when you're done.”",
-    verse: { ref: "Proverbs 15:1", text: "A gentle answer turns away wrath, but a harsh word stirs up anger.", principle: "Gentleness isn't losing the standoff — it's the only move in the room that de-escalates it." },
+    counsel: "A gentle answer really does turn the volume down — in aisle five and everywhere else. Your calm is the lesson: long after the toy is forgotten, your kid will remember that their biggest feelings didn't scare you.",
   },
   {
     id: "criticized-front",
@@ -89,7 +91,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "The private conversation is the whole game — most public-jab patterns continue because they never get named. Say what happened, how it landed, and what you're asking for, without a counter-attack attached.",
     script: "Later, calm: “That joke at dinner landed hard on me. I don't think you meant it as a hit, but it was one. Can we keep the jabs out of the room when other people are in it?”",
-    verse: { ref: "Ephesians 4:26", text: "Be angry, and don't sin. Don't let the sun go down on your wrath.", principle: "Anger itself isn't the sin — nursing it silently overnight is where it turns." },
+    counsel: "Being hurt is allowed. Carrying it silently to bed is the trap — and paying it back with interest is the other one. Name it in private, with love, the same day if you can. Hurt that gets spoken honestly heals; hurt that gets stored spoils.",
   },
   {
     id: "flaky-friend",
@@ -105,7 +107,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Flakiness continues at exactly the rate it's tolerated. You don't need anger; you need honesty plus a boundary: say it matters, say what's changed, and let your yes-to-plans get scarcer until theirs get solid.",
     script: "“No stress tonight — but real talk: that's three in a row, and I plan around these. I'd rather hear ‘I can't commit right now’ than keep getting cancelled on. What's actually going on?”",
-    verse: { ref: "Proverbs 27:6", text: "Faithful are the wounds of a friend.", principle: "The honest, slightly painful word is the loyal one — flattery and silence are what you give people you've given up on." },
+    counsel: "The truest thing a friend can offer isn't endless tolerance — it's honesty gentle enough to keep the door open. Telling the truth kindly is a gift. Silence while you quietly leave is not.",
   },
   {
     id: "online-insult",
@@ -121,7 +123,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Apply the two-filter test before replying to anyone online: Is it true? (then take the note, discard the tone) — Is this person invested in my good? (if not, they get no seat at the table). A stranger's contempt is weather, not verdict.",
     script: "The winning reply, typed nowhere: nothing. If it's someone you'll see again: “Happy to hear a real critique — this wasn't one.” Then done.",
-    verse: { ref: "Proverbs 12:16", text: "A fool shows his annoyance the same day, but one who overlooks an insult is prudent.", principle: "Speed of retaliation is the fool's tell; the strong can afford to leave an insult on the ground." },
+    counsel: "Not repaying an insult isn't losing — it's refusing to let a stranger decide who you are for the evening. The strongest answer to contempt is a life that keeps going: unbothered, and still kind.",
   },
   {
     id: "borrow-money",
@@ -137,7 +139,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Decide alone, before you answer — pressure makes terrible loans. If you give, consider giving it as a gift you never mention again (protects the relationship from the debt). If you can't gift it freely, the honest answer is no. A loan you'll resent is a no wearing a yes.",
     script: "“I love you, and I have to be straight: I can't lend again while the last one's open. If you're in real trouble, let's sit down and look at the whole picture together — that I'll gladly do.”",
-    verse: { ref: "Matthew 5:37", text: "Let your ‘yes’ be ‘yes’ and your ‘no’ be ‘no.’", principle: "A clear, loving no honors people more than a resentful yes — clarity is a form of kindness." },
+    counsel: "Let your yes mean yes and your no mean no — a clear, loving answer honors people more than a resentful favor ever will. And if you can give, give freely and never mention it again; a gift protects love in a way a loan never can.",
   },
   {
     id: "blamed",
@@ -153,7 +155,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Separate the two jobs: correct the record (facts, timeline, receipts — no adjectives) and solve the problem (“here's what I'd suggest so it can't recur”). Doing both calmly makes you look like the opposite of the accusation.",
     script: "“I want to correct the timeline, because it matters for fixing this: the handoff happened on the 12th, before I had it — here's the thread. More important: here's how we keep it from happening again.”",
-    verse: { ref: "1 Peter 2:23", text: "When he was reviled, he did not revile in return… but continued entrusting himself to him who judges justly.", principle: "You can defend the truth without avenging yourself — state facts, skip vengeance, trust the long game." },
+    counsel: "You can defend the truth without avenging yourself. State the facts, skip the payback, and let calm honesty do its slow, reliable work — the person who doesn't return fire is almost always the one the room ends up believing.",
   },
   {
     id: "inlaw-advice",
@@ -169,7 +171,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Have the line rehearsed before the gathering — in the moment is too late to draft. Warm tone, zero defensiveness, topic closed. If it persists, your spouse talking to their own parent privately beats you fighting your in-law publicly.",
     script: "With a smile, unhurried: “I know it looks different from how you did it — we've thought hard about this one and we're good. So — how's the garden doing?”",
-    verse: { ref: "Romans 12:18", text: "If it is possible, as much as it depends on you, be at peace with all men.", principle: "“As much as it depends on you” — you own your tone and boundary, not their approval of it." },
+    counsel: "Aim for peace as far as it depends on you — your tone, your boundary, your warmth. Their approval was never yours to control, and real peace doesn't require it.",
   },
   {
     id: "slow-service",
@@ -185,7 +187,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Separate the claim from the blame. You're fully entitled to the right order; the kid is not the kitchen. How you treat waitstaff on a bad day is one of the truest public readings of character anyone gets.",
     script: "“Hey, no stress — rough night in here, I can tell. This one came out wrong; can we get it fixed whenever you get a second? Thanks for hanging in there.”",
-    verse: { ref: "Colossians 3:12", text: "Put on therefore, as God's chosen ones, holy and beloved, a heart of compassion, kindness, lowliness, humility, and perseverance.", principle: "Kindness under inconvenience is the everyday uniform of character — worn where nobody's forcing you to." },
+    counsel: "How you treat someone who can do nothing for you is the truest measure of character there is. Kindness to the most stressed person in the room costs nothing — and it quietly changes both of you.",
   },
   {
     id: "group-chat",
@@ -201,7 +203,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Decide your policy before the next flare-up: hot threads get nothing from you; hot people you love get coffee. Persuasion has never once traveled through a group text — affection sometimes has.",
     script: "If pulled in directly: “Too much love for you guys to do this over text 😄 — happy to argue in person where you can't mute me. Who's up for coffee?”",
-    verse: { ref: "Proverbs 17:14", text: "The beginning of strife is like breaching a dam; therefore stop contention before quarreling breaks out.", principle: "The dam-breach is the moment to walk away — quarrels are easiest to win before they start." },
+    counsel: "Quarrels are easiest to win before they start — walking away from a hot thread isn't retreat, it's wisdom. Save your words for a table where love can actually be heard.",
   },
   {
     id: "gossip",
@@ -217,7 +219,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Take it to the source before the verdict — with a question, not an accusation. What you heard is a secondhand copy. Real friendships survive this conversation; the ones that can't survive honesty were already thinner than they looked.",
     script: "Alone, even-toned: “Something got back to me — that you've been saying X. I'd rather hear it from you than believe a rumor about a friend. What happened?”",
-    verse: { ref: "Matthew 18:15", text: "If your brother sins against you, go, show him his fault between you and him alone. If he listens to you, you have gained back your brother.", principle: "Alone and direct — the goal of confrontation is to gain the person back, not to win the case." },
+    counsel: "Go to the person, alone, with a question instead of a verdict. The goal was never to win the case — it's to win the friend back. That order of operations is very old, and it still works.",
   },
   {
     id: "friday-dump",
@@ -233,7 +235,7 @@ export const SCENARIOS: Scenario[] = [
     ],
     better: "Don't fight the fire on Friday at 4:55 — fight the pattern on Tuesday at 10. Bring the count, not the feelings, plus a fix: “If Monday-morning items could reach me by Thursday, they'll get better work.” Pattern-plus-proposal is the adult flex.",
     script: "Next week, calm: “Quick process thing — the last three Fridays had end-of-day drops for Monday. I'll always handle a true emergency, but if these could land by Thursday, the work will be better and I'm not choosing between the job and my family on Friday nights.”",
-    verse: { ref: "James 1:19", text: "Let every man be swift to hear, slow to speak, and slow to anger.", principle: "Slow to speak isn't never speaking — it's choosing Tuesday's clear words over Friday's hot ones." },
+    counsel: "Quick to listen, slow to speak, slow to anger — the old order still holds. The words you choose on Tuesday, calm, will do what Friday's hot ones never could.",
   },
 ];
 
@@ -241,14 +243,14 @@ export const SCENARIOS: Scenario[] = [
 
 export type StyleTallies = Record<ReactionStyle, number>;
 
-export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; short: string; read: string; growth: string; verse: { ref: string; text: string } }> = {
+export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; short: string; read: string; growth: string; counsel: string }> = {
   fire: {
     emoji: "🔥",
     name: "Fire",
     short: "You meet it head-on, fast and hot.",
     read: "Your first move under provocation is forward — fast, direct, sometimes loud. The strength inside it is real: you don't hide, you don't stew, and people always know where you stand. The cost is that speed and heat make your point easier to dismiss, and the fight often outlives the issue.",
     growth: "You rarely need less courage — just more clock. Almost everything you'd say hot works better said calm, and you're one deep breath away from being genuinely formidable instead of just loud. Try one beat of silence before the first sentence.",
-    verse: { ref: "Proverbs 16:32", text: "One who is slow to anger is better than the mighty; one who rules his spirit, than he who takes a city." },
+    counsel: "Ruling your own spirit is a bigger win than winning the exchange — the calm version of you is also the strongest one.",
   },
   retreat: {
     emoji: "🧊",
@@ -256,7 +258,7 @@ export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; sh
     short: "You pull back, go quiet, and carry it internally.",
     read: "Your first move is away — silence, distance, the long private replay. The strength inside it is real: you don't escalate, and you give yourself time to think. The cost is that the issue never gets a voice, so nothing changes, and the people involved often never learn there was a problem — while you keep paying for it alone.",
     growth: "Your instinct to not make it worse is valuable — the missing piece is the return trip. Retreat to cool off, then come back and say the thing. One honest sentence delivered late still beats a hundred rehearsed in silence.",
-    verse: { ref: "Ephesians 4:15", text: "Speaking truth in love, we may grow up in all things into him." },
+    counsel: "Truth spoken in love is the whole assignment — and half of it is the speaking.",
   },
   pleaser: {
     emoji: "🤝",
@@ -264,7 +266,7 @@ export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; sh
     short: "You smooth it over and absorb the cost yourself.",
     read: "Your first move is toward harmony — agree, apologize, absorb, keep the peace. The strength inside it is real: rooms are genuinely better with a peacemaker in them. The cost is that the peace is often purchased with your own unspoken account, and people learn your yes is automatic — which quietly devalues it.",
     growth: "You don't need to become harder — you need your kindness to include yourself. Practice the warm no: same friendly tone you already have, different answer. The people worth keeping will adjust within a week.",
-    verse: { ref: "Matthew 5:37", text: "Let your ‘yes’ be ‘yes’ and your ‘no’ be ‘no.’" },
+    counsel: "A clear yes and an honest no are both acts of love — including toward yourself.",
   },
   steady: {
     emoji: "⚓",
@@ -272,7 +274,7 @@ export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; sh
     short: "You hold position — calm, direct, measured.",
     read: "Your picks lean toward the steady move — pause first, go direct, keep the person and the problem separate. Either that's genuinely how you operate, or it's how you'd like to operate; both are worth knowing. The honest check: is this what you actually do at full temperature, or what you do on a quiz?",
     growth: "If it's real, guard it — steady is a discipline, not a trait, and it erodes without practice. And watch steady's one blind spot: calm can drift into detached. Some moments need your heart visible, not just your composure.",
-    verse: { ref: "Proverbs 25:28", text: "Like a city that is broken down and without walls is a man whose spirit is without restraint." },
+    counsel: "Steadiness is kept the same way it's built — one unhurried, honest response at a time.",
   },
 };
 
@@ -296,7 +298,7 @@ export function reactAIPrompt(s: Scenario, picked: ReactionOption): string {
     "",
     "Ground rules for this conversation:",
     "- Be positive and practical — no shame, no lecturing.",
-    "- Counsel me from a biblical perspective where it fits, gently.",
+    "- Keep the counsel grace-first: merciful, hopeful, practical. No preaching at me.",
     "- Ask me one question at a time about the real version of this in my life.",
     "- Don't diagnose me or label me. Help me think, then help me pick one small next step.",
     "- If anything I describe involves safety, abuse, or crisis, point me to real human help first.",
