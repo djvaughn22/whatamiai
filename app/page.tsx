@@ -1,6 +1,6 @@
 "use client";
 // WhatAmIAI.com — landing + entry screen.
-// Six ways in, ordered fast-and-fun first. Every mode is tap-first,
+// Six ways in. Every mode is tap-first,
 // under two minutes to a result, and ends with a named pattern, a blind
 // spot, and one concrete step.
 
@@ -9,14 +9,6 @@ import { listSaved } from "./lib/storage";
 import { Card, PageHead, PrimaryBtn, Shell, usePalette } from "./components/ui";
 
 const MODES = [
-  {
-    href: "/react",
-    emoji: "⚡",
-    name: "How Do I React?",
-    time: "Real situations · tap your honest move",
-    text: "Cut off in traffic. Credit stolen at work. The group chat on fire. Tap what you'd really do, get a no-shame read, a steadier script, and solid counsel — and slowly discover your reaction lean.",
-    button: "Deal me a situation",
-  },
   {
     href: "/situation",
     emoji: "🧭",
@@ -32,6 +24,14 @@ const MODES = [
     time: "3 numbers + 3 taps · 60 seconds",
     text: "Most people have never seen their own margin written down. Three numbers, three taps — your real math, your money pattern, and one move. Nothing leaves your device.",
     button: "Show me my math",
+  },
+  {
+    href: "/react",
+    emoji: "⚡",
+    name: "How Do I React?",
+    time: "Real situations · tap your honest move",
+    text: "Cut off in traffic. Credit stolen at work. The group chat on fire. Tap what you'd really do, get a no-shame read, a steadier script, and solid counsel — and slowly discover your reaction lean.",
+    button: "Deal me a situation",
   },
   {
     href: "/habits",
