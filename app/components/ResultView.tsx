@@ -7,6 +7,7 @@ import { useState } from "react";
 import type { Reflection } from "../lib/types";
 import { saveReflection } from "../lib/storage";
 import { copyText, downloadFile, safeFilename, toAIPrompt, toJSONExport, toMarkdown, toPlainText, toSnapshot } from "../lib/exporters";
+import { downloadSnapshotImage } from "../lib/shareImage";
 import { SAFETY_COPY } from "../lib/safety";
 import { Card, Eyebrow, GhostBtn, PrimaryBtn, type Palette } from "./ui";
 
@@ -72,6 +73,29 @@ export default function ResultView({
 
       {/* actions */}
       <div className="no-print">
+        {flash && (
+          <div
+            role="status"
+            style={{
+              position: "fixed",
+              bottom: 18,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 60,
+              background: pal.card,
+              border: `1px solid ${pal.brand}`,
+              borderRadius: 999,
+              padding: "10px 18px",
+              fontSize: 14,
+              fontWeight: 700,
+              color: pal.text,
+              maxWidth: "calc(100vw - 32px)",
+              textAlign: "center",
+            }}
+          >
+            {flash}
+          </div>
+        )}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 22 }}>
           {!readOnly && (
             <PrimaryBtn
@@ -93,6 +117,8 @@ export default function ResultView({
           <GhostBtn pal={pal} small onClick={() => downloadFile(`${safeFilename(r.title)}.md`, toMarkdown(r), "text/markdown")}>Export Markdown</GhostBtn>
           <GhostBtn pal={pal} small onClick={() => downloadFile(`${safeFilename(r.title)}.json`, toJSONExport(r), "application/json")}>Export JSON</GhostBtn>
           <GhostBtn pal={pal} small onClick={() => doCopy(toSnapshot(r), "Snapshot copied — paste it into a text or email if you choose to.")}>Copy text/email snapshot</GhostBtn>
+          <GhostBtn pal={pal} small onClick={() => { downloadSnapshotImage(r, "square"); note("Image saved to your device — share it only if you choose to."); }}>Snapshot image (square)</GhostBtn>
+          <GhostBtn pal={pal} small onClick={() => { downloadSnapshotImage(r, "portrait"); note("Image saved to your device — share it only if you choose to."); }}>Snapshot image (tall)</GhostBtn>
         </div>
 
         <Card pal={pal} style={{ marginTop: 20 }}>
