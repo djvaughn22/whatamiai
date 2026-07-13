@@ -66,7 +66,7 @@ export default function SituationPage() {
           <PageHead
             pal={pal}
             title="What kind of situation is it?"
-            sub="One thing, thought through. The questions adapt to what you pick — expect about 15 of them, most tappable, all skippable."
+            sub="About 8 taps, under a minute, no typing required. At the end, the situation gets named — its shape, its blind spot, and one step."
           />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 }}>
             {SITUATION_TYPES.map((t) => (
@@ -106,7 +106,20 @@ export default function SituationPage() {
       )}
 
       {stage === "result" && result && (
-        <ResultView pal={pal} reflection={result} onRestart={restart} restartLabel="Examine another situation" />
+        <>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{ fontSize: 44, marginBottom: 8 }} aria-hidden>
+              {typeof result.meta?.patternEmoji === "string" ? result.meta.patternEmoji : "🧭"}
+            </div>
+            <p style={{ fontSize: 13, fontWeight: 800, color: pal.sub, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 6px" }}>
+              This situation has a shape
+            </p>
+            <h1 style={{ fontSize: "clamp(1.6rem, 8vw, 2.2rem)", fontWeight: 900, color: pal.text, margin: 0, lineHeight: 1.15 }}>
+              {typeof result.meta?.pattern === "string" ? result.meta.pattern : "The read"}
+            </h1>
+          </div>
+          <ResultView pal={pal} reflection={result} onRestart={restart} restartLabel="Examine another situation" />
+        </>
       )}
     </Shell>
   );

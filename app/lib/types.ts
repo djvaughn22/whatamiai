@@ -3,12 +3,14 @@
 // Engines compose sections; the UI, storage, and exporters never need to
 // know which mode produced them.
 
-export type Mode = "mirror" | "situation" | "patterns" | "combined";
+export type Mode = "mirror" | "situation" | "patterns" | "money" | "habits" | "combined";
 
 export const MODE_LABEL: Record<Mode, string> = {
   mirror: "My AI Mirror",
   situation: "My Situation",
   patterns: "My Overall Patterns",
+  money: "Money Check",
+  habits: "7-Day Starter",
   combined: "Combined view",
 };
 

@@ -10,41 +10,28 @@ export const PATTERN_QUESTIONS: Question[] = [
   // Starting and finishing
   { id: "start_finish", area: "Starting and finishing", label: "Which is closest to how projects usually go for you?", kind: "choice", options: ["I start a lot and finish a little", "I start carefully and finish most of it", "I start a lot and finish a lot", "I rarely start new things"] },
   { id: "stops", area: "Starting and finishing", label: "When something goes unfinished, what usually stopped it?", kind: "choice", options: ["I lost interest once it was figured out", "Something newer pulled me away", "It got hard or confusing", "Life interrupted and I didn't come back", "Nothing — I usually finish"] },
-  { id: "finished_example", area: "Starting and finishing", label: "One thing you actually finished recently — and one still sitting unfinished.", kind: "text", placeholder: "Optional. \"Finished: … / Unfinished: …\"" },
-  { id: "follow_through", area: "Starting and finishing", label: "When you do follow through, what's usually present?", kind: "text", placeholder: "Optional. A deadline, a person, momentum, stakes…" },
   // Decisions
   { id: "decide_speed", area: "Decisions", label: "Decisions: fast or slow?", kind: "choice", options: ["Fast — sometimes too fast", "Small ones fast, big ones I sit on", "I delay most decisions", "Depends entirely on the day"] },
   { id: "seek", area: "Decisions", label: "Before a big decision, what do you reach for most?", kind: "choice", options: ["More information", "Reassurance from someone", "Consensus — everyone on board", "Control of the details", "Quiet time to think"] },
-  { id: "good_decision", area: "Decisions", label: "A recent decision you feel good about — and what made it work.", kind: "text", placeholder: "Optional." },
   // Pressure
   { id: "pressure", area: "Pressure", label: "When time or stakes go up, you get… (pick up to two)", kind: "chips", maxChips: 2, options: ["More focused", "Controlling", "Withdrawn", "Impulsive", "Irritable", "Extremely productive", "Scattered", "Quiet"] },
-  { id: "notice_first", area: "Pressure", label: "What would people around you say they notice first when you're under pressure?", kind: "text", placeholder: "Optional — their words, not yours." },
-  { id: "regain", area: "Pressure", label: "What actually helps you regain perspective?", kind: "text", placeholder: "Optional." },
   // Conflict
   { id: "conflict_style", area: "Conflict", label: "Conflict: what's your default?", kind: "choice", options: ["Address it directly", "Avoid it as long as possible", "Soften it — keep the peace", "Escalate — win it", "Overexplain until it dissolves"] },
   { id: "conflict_hard", area: "Conflict", label: "Which is hardest for you?", kind: "choice", options: ["Apologizing", "Forgiving", "Setting a boundary", "Staying calm", "Letting it go afterward"] },
   // Responsibility
-  { id: "carry", area: "Responsibility", label: "A responsibility you reliably carry, week after week.", kind: "text", placeholder: "Optional." },
-  { id: "postpone", area: "Responsibility", label: "A responsibility you keep postponing.", kind: "text", placeholder: "Optional." },
   { id: "balance", area: "Responsibility", label: "Where's the imbalance, if any?", kind: "choice", options: ["I take on too much", "I wait for others to act first", "A bit of both", "It's fairly balanced"] },
   // Attention
   { id: "time", area: "Attention", label: "Most of your actual hours go to…", kind: "choice", options: ["Work or projects", "Family and people", "Screens and scrolling", "Other people's needs", "Getting through the day"] },
-  { id: "deserves", area: "Attention", label: "What deserves attention but keeps not getting it?", kind: "text", placeholder: "Optional." },
   { id: "distraction", area: "Attention", label: "When work gets uncomfortable, what do you reach for?", kind: "choice", options: ["A new idea", "Scrolling", "Busywork that feels productive", "Helping someone else instead", "I usually push through"] },
   // Relationships
-  { id: "patient", area: "Relationships", label: "Who gets the most patient version of you — and who gets the least?", kind: "text", placeholder: "Optional. \"Most: … / Least: …\"" },
   { id: "respond", area: "Relationships", label: "When someone close brings you a problem, you usually…", kind: "choice", options: ["Listen first", "Jump to fixing it", "Persuade them to see it my way", "Withdraw — I need space", "Take it over completely"] },
-  { id: "disagree", area: "Relationships", label: "Who in your life can disagree with you honestly — and does it happen?", kind: "text", placeholder: "Optional." },
   // Growth and correction
   { id: "wrong", area: "Growth", label: "When you're proven wrong, what actually happens?", kind: "choice", options: ["I adjust quickly", "I defend first, adjust later", "I dig in", "I try not to find out"] },
-  { id: "changed_mind", area: "Growth", label: "Something you changed your mind about recently.", kind: "text", placeholder: "Optional." },
   // Strengths in action
   { id: "asked_for", area: "Strengths", label: "What do people repeatedly ask you to help with?", kind: "text", placeholder: "The thing they keep coming back for." },
-  { id: "energy", area: "Strengths", label: "What work gives you energy instead of draining you?", kind: "text", placeholder: "Optional." },
   // Alignment
   { id: "matters", area: "Alignment", label: "What do you say matters most to you?", kind: "text", placeholder: "Your words." },
   { id: "gets_best", area: "Alignment", label: "Does it actually get your best time and attention?", kind: "choice", options: ["Yes, consistently", "Some weeks", "Honestly, no", "I'm not sure"] },
-  { id: "promise", area: "Alignment", label: "One promise — to yourself or someone else — that's still unfinished.", kind: "text", placeholder: "Optional." },
 ];
 
 const CONFLICT_PHRASE: Record<string, string> = {
@@ -58,9 +45,7 @@ const CONFLICT_PHRASE: Record<string, string> = {
 export function composePatternsResult(a: Answers): Reflection {
   const t = (id: string) => answerText(a, id);
   const sections: Section[] = [];
-  const safety = checkSafetyAll(
-    ["finished_example", "follow_through", "good_decision", "notice_first", "regain", "carry", "postpone", "deserves", "patient", "disagree", "changed_mind", "asked_for", "energy", "matters", "promise"].map((id) => t(id))
-  );
+  const safety = checkSafetyAll(["asked_for", "matters"].map((id) => t(id)));
 
   // How you currently operate
   const operate: string[] = [];
@@ -120,9 +105,7 @@ export function composePatternsResult(a: Answers): Reflection {
   const respond = t("respond");
   if (respond) rel.push(`When someone close brings a problem, you usually ${respond.toLowerCase().replace("it my way", "it your way").replace("i need space", "you need space")}.`);
   if (cs) rel.push(`In conflict you tend to ${CONFLICT_PHRASE[cs] ?? cs.toLowerCase()}, and you said the hardest part is ${t("conflict_hard").toLowerCase() || "—"}.`);
-  if (t("patient")) rel.push(`On patience, your words: “${t("patient")}”.`);
-  if (t("disagree")) rel.push(`Who can disagree with you honestly: “${t("disagree")}”. People with no honest dissenter around them drift — keep that person close.`);
-  else rel.push("You didn't name anyone who can disagree with you honestly. If no one comes to mind, that's worth more attention than anything else on this page.");
+  rel.push("One question worth sitting with: who in your life can disagree with you honestly — and does it actually happen? People with no honest dissenter around them drift.");
   if (rel.length) sections.push({ heading: "How you relate to others", paragraphs: rel, note: "No attachment styles, no relationship types — just the behavior you described." });
 
   // Alignment + gap
@@ -137,10 +120,6 @@ export function composePatternsResult(a: Answers): Reflection {
   const gap: string[] = [];
   if (matters && (getsBest === "Honestly, no" || getsBest === "I'm not sure"))
     gap.push(`You said “${matters}” matters most, but that it ${getsBest === "Honestly, no" ? "honestly doesn't" : "may not"} get your best time and attention${time ? ` — most hours go to ${time.toLowerCase()}` : ""}. That gap may be worth examining.`);
-  const patient = t("patient").toLowerCase();
-  if (matters && patient && /famil|wife|husband|kids?|children/.test(matters.toLowerCase()) && /least:?\s*(my )?(famil|wife|husband|kids?|home)/.test(patient))
-    gap.push("You named family as what matters most, but described giving your least patient attention at home. You wouldn't be the first — and it may be worth examining.");
-  if (t("promise")) gap.push(`There's also the unfinished promise you named: “${t("promise")}”. Unkept promises to ourselves quietly teach us not to trust our own word.`);
   if (gap.length) sections.push({ heading: "Where there may be a gap", paragraphs: gap, note: "A gap is information, not an indictment." });
 
   // Strength to use intentionally

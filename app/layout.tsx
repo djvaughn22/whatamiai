@@ -7,7 +7,7 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "WhatAmIAI",
   description:
-    "Take an honest look at where you are. Analyze your own AI prompts, think through one situation, or explore your patterns — guided reflection that stays on your device. No labels, no accounts.",
+    "Fast, honest tools for real life — how you react, one situation named, your money math, a 7-day habit starter, your AI mirror. Tap-first, on your device, no labels, no accounts.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

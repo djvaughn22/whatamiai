@@ -1,5 +1,5 @@
 "use client";
-// My Overall Patterns — the broader assessment. ~27 questions across ten
+// My Overall Patterns — the broader assessment. 15 questions across ten
 // areas; evidence over adjectives. Draft autosaves locally.
 
 import { useEffect, useRef, useState } from "react";
@@ -70,7 +70,7 @@ export default function PatternsPage() {
               This won&apos;t ask if you&apos;re creative or a good leader. It asks for observable evidence — what you finished, what you postponed, who gets your patience — and reflects back the tendencies your own answers describe.
             </p>
             <p style={{ fontSize: 14, color: pal.sub, lineHeight: 1.65, margin: 0 }}>
-              About 27 questions, 6–8 minutes. Everything is skippable, your place autosaves on this device, and the written ones are optional. No types, no scores, no labels.
+              15 questions, 2–3 minutes, almost all tappable. Everything is skippable, your place autosaves on this device, and the two written ones are optional. No types, no scores, no labels.
             </p>
           </Card>
           <PrimaryBtn pal={pal} full onClick={() => setStage("flow")}>Begin →</PrimaryBtn>
