@@ -77,6 +77,9 @@ export default function Home() {
         <p style={{ fontSize: 18, fontWeight: 800, color: pal.brand, margin: "0 0 14px", lineHeight: 1.3 }}>
           Don&apos;t put me in a box. Just help me think.
         </p>
+        <p style={{ fontSize: 17, fontWeight: 700, color: pal.text, lineHeight: 1.5, maxWidth: 480, margin: "0 auto 10px" }}>
+          Use AI as a mirror. See what your prompts, choices, and habits reveal.
+        </p>
         <p style={{ fontSize: 17, color: pal.sub, lineHeight: 1.7, maxWidth: 480, margin: "0 auto" }}>
           Fast, honest tools for real life — reactions, situations, money, habits. Almost everything is a tap, every result ends with a named pattern, a blind spot, and one step. It all runs on your device.
         </p>
