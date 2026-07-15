@@ -12,7 +12,15 @@ npm run dev
 ```
 
 ## Deploy
-Vercel project `whatamiai` — `vercel --prod` (or push to `main` if GitHub-connected).
+Push to `main` — Vercel auto-deploys production.
 
----
-Keep changes small and clean. Branch → PR → merge so updates stay tidy for collaborators.
+## Repo map
+
+- **Production:** https://whatamiai.com — branch `main`, auto-deploys on push (Vercel).
+- **Framework:** Next.js 15.3.3 (App Router). Build: `npm run build`. No test suite.
+- **Routes:** `/` , `/mirror`, `/patterns`, `/react`, `/money`, `/habits`, `/situation`, `/saved`
+- **Family chrome:** `OpenMirrorNav.tsx` / `OpenMirrorFooter.tsx` / `OpenMirrorTheme.tsx` are synced copies — canonical source is the hub repo `packages/openmirror-ui/` + `scripts/sync-ui.sh`. Never edit the local copies.
+- **Theme:** family ☀️/🌙 toggle; `om-theme` localStorage key; light mode remaps family hexes (see hub `docs/OPEN_MIRROR_PATTERNS.md`).
+- **Persistence (localStorage):** `wai3-mirror-session`, `wai3-patterns-draft`, `wai3-situation-draft`, `wai3-saved-v1`, `wai-habit-streak-v1`, `wai-react-v1`
+- **Protected:** tap-first six-mode design; named patterns; /react Bible-based scenario deck.
+- **Make changes in:** `app/page.tsx` and the per-mode pages.

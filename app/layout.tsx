@@ -5,6 +5,7 @@ import OpenMirrorNav from "./OpenMirrorNav";
 import Script from "next/script";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://whatamiai.com"),
   title: "WhatAmIAI",
   description:
     "Fast, honest tools for real life — how you react, one situation named, your money math, a 7-day habit starter, your AI mirror. Tap-first, on your device, no labels, no accounts.",
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <body>
         <OpenMirrorNav site="WhatAmIAI.com" />
         {children}
