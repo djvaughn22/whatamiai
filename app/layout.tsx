@@ -6,7 +6,10 @@ import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://whatamiai.com"),
-  title: "WhatAmIAI",
+  title: {
+    default: "WhatAmIAI",
+    template: "%s | WhatAmIAI",
+  },
   description:
     "Fast, honest tools for real life — how you react, one situation named, your money math, a 7-day habit starter, your AI mirror. Tap-first, on your device, no labels, no accounts.",
 };
