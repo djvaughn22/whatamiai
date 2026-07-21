@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import AboutDestinationCard from "../components/AboutDestinationCard";
+import { BE_PREPARED_CARD } from "../lib/destinations";
 
 export const metadata: Metadata = {
   title: "About WhatAmIAI",
@@ -35,6 +37,11 @@ export default function AboutPage() {
           Free, no account. Everything runs and saves on this device — nothing you type is sent
           anywhere.
         </p>
+
+        {/* The one quiet destination card — after the site's own story. */}
+        <div style={{ margin: "0 0 28px" }}>
+          <AboutDestinationCard card={BE_PREPARED_CARD} />
+        </div>
 
         <p style={{ fontSize: 13, lineHeight: 1.7, color: "#64748b", margin: 0 }}>
           WhatAmIAI is an{" "}
