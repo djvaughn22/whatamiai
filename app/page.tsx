@@ -1,6 +1,6 @@
 "use client";
 // WhatAmIAI.com — landing + entry screen.
-// Six ways in. Every mode is tap-first,
+// Seven ways in. Every mode is tap-first,
 // under two minutes to a result, and ends with a named pattern, a blind
 // spot, and one concrete step.
 
@@ -40,6 +40,14 @@ const MODES = [
     time: "3 taps · plan + streak",
     text: "Exercise, eating, sleep, less phone, water, quiet time. Three taps build a week sized to where you actually are — with a streak to keep and a best record to beat.",
     button: "Build my week",
+  },
+  {
+    href: "/phone",
+    emoji: "📵",
+    name: "Intentional Phone Use",
+    time: "One pick · 7 small days",
+    text: "You want to spend less time on your phone. Pick the one use you want less of, then seven small days: observe, remove one interruption, add one pause, protect one moment. Not a detox — the point is noticing what you choose.",
+    button: "Start the 7 days",
   },
   {
     href: "/mirror",
