@@ -64,14 +64,12 @@ function DayCard({ pal, day, index, done, current, onToggle }: { pal: Palette; d
 
 export default function PhonePage() {
   const pal = usePalette();
-  const [loaded, setLoaded] = useState(false);
   const [plan, setPlan] = useState<PhonePlan | null>(null);
   const [focus, setFocus] = useState("");
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPlan(loadPhonePlan());
-    setLoaded(true);
   }, []);
 
   const start = () => {
@@ -86,8 +84,6 @@ export default function PhonePage() {
     setFocus("");
     window.scrollTo(0, 0);
   };
-
-  if (!loaded) return <Shell pal={pal} narrow>{null}</Shell>;
 
   if (plan) {
     const doneCount = plan.done.length;
