@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "One Habit",
+  title: "7-Day Habit Starter",
   description: "Pick one habit for one week, sized to real life.",
 };
 

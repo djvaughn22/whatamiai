@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "One Situation",
+  title: "My Situation",
   description: "Think through one real situation, step by step. Runs on your device.",
 };
 

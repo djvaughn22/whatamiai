@@ -3,7 +3,7 @@
 // test the other.
 
 import type { Reflection, Section } from "./types";
-import { newId } from "./types";
+import { MODE_LABEL, newId, REFLECTION_SCHEMA_VERSION } from "./types";
 
 const asStr = (v: unknown): string => (typeof v === "string" ? v : "");
 const asArr = (v: unknown): string[] => (Array.isArray(v) ? v.map(String) : []);
@@ -12,8 +12,10 @@ export function composeCombined(saved: Reflection[]): Reflection | null {
   const mirror = saved.find((r) => r.mode === "mirror");
   const situation = saved.find((r) => r.mode === "situation");
   const patterns = saved.find((r) => r.mode === "patterns");
-  const modes = [mirror, situation, patterns].filter(Boolean).length;
-  if (modes < 2) return null;
+  const phone = saved.find((r) => r.mode === "phone");
+  const react = saved.find((r) => r.mode === "react");
+  const distinct = new Set(saved.filter((r) => r.mode !== "combined").map((r) => r.mode));
+  if (distinct.size < 2) return null;
 
   const cmp: string[] = [];
 
@@ -28,7 +30,7 @@ export function composeCombined(saved: Reflection[]): Reflection | null {
     if ((mirror.meta?.planHeavy || mTraps.includes("plans_no_finish")) && pStart === "I start a lot and finish a little")
       cmp.push("You use AI heavily to plan and build, and your broader assessment says finishing is harder than starting. A useful experiment may be to make completion — not ideation — the required final step of each AI session.");
     if (pMatters && (pGetsBest === "Honestly, no" || pGetsBest === "I'm not sure") && mTop.length)
-      cmp.push(`You said “${pMatters}” matters most, while your pasted prompts mostly focus on ${mTop.slice(0, 2).join(" and ").toLowerCase()}. Prompts aren't life — but if the pattern holds off-screen too, attention and priority have drifted apart.`);
+      cmp.push(`You said “${pMatters}” matters most, while your pasted prompts mostly focus on ${mTop.slice(0, 2).join(" and ").toLowerCase()}. Prompts aren't life — but if the pattern holds off-screen too, attention and priority may have drifted apart.`);
     if (Number(mirror.meta?.decideCount ?? 0) >= 3 && pSeek === "Reassurance from someone")
       cmp.push("Your prompts hand AI a lot of decisions, and your assessment says reassurance is what you reach for before deciding. Together that suggests the hard part isn't information — it's owning the call. Writing your own answer first, then asking for the strongest case against it, keeps the judgment with you.");
     if (mTraps.includes("reassurance_loop") && pSeek === "More information")
@@ -50,25 +52,52 @@ export function composeCombined(saved: Reflection[]): Reflection | null {
       cmp.push("Across both views you tend to wait on more input before acting. Check whether the situation you examined actually lacks information — or just lacks a decision.");
   }
 
+  if (phone && patterns) {
+    const pTime = asStr(patterns?.meta?.time);
+    if (pTime === "Screens and scrolling")
+      cmp.push(`Across two saved reflections, similar situations appeared: your patterns answers said most hours go to screens and scrolling, and your phone week targets ${asStr(phone.meta?.focus).toLowerCase() || "one phone use"}. Two windows may be showing the same pattern — or the same busy month.`);
+  }
+
+  if (react && patterns) {
+    const lean = asStr(react.meta?.lean);
+    const pConflict = asStr(patterns?.meta?.conflictStyle);
+    if ((lean === "retreat" || lean === "pleaser") && (pConflict === "Avoid it as long as possible" || pConflict === "Soften it — keep the peace"))
+      cmp.push("Your card picks and your stated conflict default both lean away from saying the hard thing. If both fit, the return trip — coming back later to say it — may be the highest-leverage practice on either page.");
+  }
+
+  const included = [...distinct].map((m) => MODE_LABEL[m]).join(", ");
+
   const sections: Section[] = [];
   sections.push({
     heading: "What this combines",
+    kind: "summary",
     paragraphs: [
-      `This private summary compares ${[mirror && "your AI Mirror", situation && "your Situation review", patterns && "your Overall Patterns"].filter(Boolean).join(", ")}. Neither source outranks the other — each is a different window, and both are limited.`,
+      `This private summary compares your saved reflections (${included}). No source outranks another — each is a different window, and all of them are limited.`,
     ],
   });
 
   if (cmp.length) {
-    sections.push({ heading: "Where the views meet", bullets: cmp, note: "Careful comparisons, not conclusions. Only you know which of these actually fit." });
+    sections.push({ heading: "Where the views meet", kind: "observations", bullets: cmp, note: "Careful comparisons, not conclusions. Only you know which of these actually fit." });
   } else {
     sections.push({
       heading: "Where the views meet",
+      kind: "observations",
       paragraphs: ["No strong overlaps stood out between these reflections — which is itself worth noticing. Different windows showing different things usually means more of you is off-screen than on it."],
     });
   }
 
   sections.push({
+    heading: "What might challenge this reading",
+    kind: "challenge",
+    bullets: [
+      "Similar answers across modes may reflect the question framing, one recent situation, or a broader pattern. Saved results alone cannot determine which.",
+      "The reflections being compared may come from very different days — a hard week can echo through all of them.",
+    ],
+  });
+
+  sections.push({
     heading: "How to use this",
+    kind: "questions",
     bullets: [
       "Treat the AI-prompt view as behavior (what you actually typed) and the assessments as self-report (how you see it). Where they disagree, reality gets the tiebreak.",
       "Pick one line above and test it against the next two weeks, not against your self-image.",
@@ -82,5 +111,6 @@ export function composeCombined(saved: Reflection[]): Reflection | null {
     title: "Combined view",
     createdAt: Date.now(),
     sections,
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
   };
 }

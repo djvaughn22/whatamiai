@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "My Patterns",
+  title: "My Overall Patterns",
   description: "Look at how you actually operate — your bigger patterns, no labels.",
 };
 

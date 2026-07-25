@@ -256,6 +256,7 @@ export function composePatternsResult(a: Answers): Reflection {
       matters,
       getsBest,
       time,
+      conflictStyle: cs,
     },
   };
 }

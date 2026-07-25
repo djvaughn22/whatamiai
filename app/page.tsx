@@ -36,7 +36,7 @@ const MODES = [
   {
     href: "/habits",
     emoji: "🏃",
-    name: "7-Day Starter",
+    name: "7-Day Habit Starter",
     time: "3 taps · plan + streak",
     text: "Exercise, eating, sleep, less phone, water, quiet time. Three taps build a week sized to where you actually are — with a streak to keep and a best record to beat.",
     button: "Build my week",

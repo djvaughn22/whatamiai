@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How I React",
+  title: "How Do I React?",
   description: "Scenario deck: see how you actually react, one honest choice at a time.",
 };
 

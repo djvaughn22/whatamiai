@@ -26,16 +26,19 @@ export default function AboutPage() {
         <h2 style={{ fontSize: 17, fontWeight: 900, margin: "0 0 8px" }}>What you can do here</h2>
         <ul style={{ fontSize: 15, lineHeight: 1.8, color: "#94a3b8", margin: "0 0 28px", paddingLeft: 18 }}>
           <li>My AI Mirror — paste your own prompts and see the repeated topics and goals in them.</li>
-          <li>One Situation — think through one real situation, step by step.</li>
-          <li>My Patterns and How I React — an honest look at how you actually operate.</li>
-          <li>Money Check — three numbers, three taps, the real math.</li>
-          <li>One Habit — pick one habit for one week, sized to real life.</li>
+          <li>My Situation — think through one real situation, step by step.</li>
+          <li>My Overall Patterns and How Do I React? — an honest look at how you answered, with the evidence shown.</li>
+          <li>Money Check — three numbers, three taps, the real math kept separate from any reading of it.</li>
+          <li>7-Day Habit Starter — pick one habit for one week, sized to real life.</li>
+          <li>Intentional Phone Use — pick one phone use to reduce, run seven small days.</li>
         </ul>
 
         <h2 style={{ fontSize: 17, fontWeight: 900, margin: "0 0 8px" }}>Your data</h2>
         <p style={{ background: "#141d2e", border: "1px solid #26324c", borderRadius: 14, padding: "14px 16px", fontSize: 15, lineHeight: 1.65, margin: "0 0 28px" }}>
-          Free, no account. Everything runs and saves on this device — nothing you type is sent
-          anywhere.
+          Free, no account. The tools are rule-based and run on this device — nothing you type is
+          sent anywhere, and saved reflections stay in this browser. If you choose to continue a
+          reflection with another AI, you copy it yourself, and you can review what will be
+          included first.
         </p>
 
         {/* The one quiet destination card — after the site's own story. */}
