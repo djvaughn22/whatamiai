@@ -3,8 +3,8 @@
 // actually is, plus the known blind spot for their obstacle. A local
 // streak tracker (current + best) gives a reason to come back daily.
 
-import type { Reflection, Section } from "./types";
-import { newId } from "./types";
+import type { Evidence, Reflection, Section } from "./types";
+import { newId, REFLECTION_SCHEMA_VERSION } from "./types";
 
 export type HabitGoal = {
   id: string;
@@ -241,36 +241,69 @@ export const HABIT_GOALS: HabitGoal[] = [
 export const HABIT_OBSTACLES = ["No time", "No energy", "I forget", "I start too big and quit", "It gets boring", "Stress steamrolls it"];
 export const HABIT_WHEN = ["Morning", "Lunchtime", "After work", "Evening"];
 
+// One thing that may make this harder — a possibility tied to the
+// obstacle the person selected, never a verdict about them.
 const OBSTACLE_READS: Record<string, string> = {
   "No time":
-    "The no-time blind spot: this plan's steps run 2–20 minutes, and the honest math says the time exists — it's currently spoken for by something easier. You don't need to find time; you need to appoint it. A step with a calendar slot happens; a step waiting for spare time waits forever.",
+    "this plan's steps run 2–20 minutes, and for most schedules that time exists — it may currently be spoken for by something easier. A step with a calendar slot tends to happen; a step waiting for spare time tends to wait.",
   "No energy":
-    "The no-energy blind spot: you're sizing the habit to motivated-you, then handing it to tired-you to execute. Shrink every step until tired-you can do it without negotiating — a habit too small to skip beats a perfect one you're too drained to start. Energy follows action more often than it precedes it.",
+    "the habit may be getting sized on motivated days and executed on tired ones. A step small enough for tired-you to do without negotiating beats a perfect one that never starts — and energy follows action more often than it precedes it.",
   "I forget":
-    "The forgetting blind spot: memory was never the right tool for this job. Habits that survive get welded to something that already happens daily — after the alarm, with the coffee, when you park the car. Attach each day's step to an anchor and put the equipment where the anchor happens. Let the environment remember.",
+    "memory may be the wrong tool for this job. Habits that survive usually get welded to something that already happens daily — after the alarm, with the coffee, when you park the car — with the equipment placed where the anchor happens. Let the environment do the remembering.",
   "I start too big and quit":
-    "The all-or-nothing blind spot: day one is a 90% effort, day four is a missed day, day five declares the whole thing ruined — and the cycle restarts next month. The fix is a personal rule: never miss twice. One missed day is data; two is a new habit forming in the wrong direction. Boring, sustainable pace wins every rematch with heroic sprints.",
+    "one missed day may be getting read as ruin, with the restart pushed to next month. A counter-rule worth testing: never miss twice. One missed day is data; two is a new habit forming in the wrong direction.",
   "It gets boring":
-    "The boredom blind spot: boredom isn't failure — it's what mastery feels like from the inside at week two. The novelty was always going to leave; the results were always going to arrive after it left. Pair the habit with something you genuinely enjoy (music, podcast, a view), and let 'show up bored' count as a full win.",
+    "boredom at week two may not be failure — it's often what practice feels like once novelty leaves, and results tend to arrive after it does. Pairing the habit with something you genuinely enjoy, and letting 'show up bored' count as a full win, tests that.",
   "Stress steamrolls it":
-    "The stress blind spot: you've likely filed this habit under 'extra' — first thing overboard in a hard week. But movement, sleep, real food, and quiet are what fund your stress response. Design the crisis version now (2 minutes, one glass, one verse) so hard weeks shrink the habit instead of deleting it.",
+    "this habit may be filed under 'extra' — first thing overboard in a hard week — even though movement, sleep, real food, and quiet are often what fund the stress response. Designing the crisis version now (2 minutes, one glass, one verse) keeps hard weeks shrinking the habit instead of deleting it.",
+};
+
+const OBSTACLE_ALTS: Record<string, string> = {
+  "No time": "Sometimes there genuinely is no slack — if an honest look at the calendar says so, the fix is a smaller step, not a stronger intention.",
+  "No energy": "Persistent no-energy can also be a sleep, health, or season signal worth checking on its own — not a willpower question at all.",
+  "I forget": "If reminders already exist and still get ignored, the obstacle may actually be size or energy, not memory.",
+  "I start too big and quit": "Some people genuinely run on sprints — the check is what week three looks like, not how day one felt.",
+  "It gets boring": "Boredom can also mean the habit is the wrong one. Worth asking whether the goal still matters or just sounded right.",
+  "Stress steamrolls it": "If stress is constant rather than episodic, the habit may need to shrink permanently — not just on bad days.",
+};
+
+/** Busy-day and minimum versions per goal, for the week's experiment card. */
+const GOAL_VERSIONS: Record<string, { busy: string; minimum: string }> = {
+  move: { busy: "A 10-minute walk, any time it fits.", minimum: "Shoes on, out the door, two minutes." },
+  eat: { busy: "Eat the planted decent option first; everything else is optional.", minimum: "Write down what you ate today — nothing else." },
+  sleep: { busy: "Phone charges outside the bedroom; that's the whole night.", minimum: "Set the landing alarm, even if you ignore it." },
+  phone: { busy: "One no-phone meal.", minimum: "Glance at the screen-time number once." },
+  water: { busy: "One full glass before the first coffee.", minimum: "Fill the bottle tonight for tomorrow." },
+  quiet: { busy: "The 90-second version: one verse, one breath, one sentence.", minimum: "Sit down in the chair. That's it." },
 };
 
 export type HabitInputs = { goalId: string; level: number; obstacle: string; when: string };
 
 export function composeHabitsResult(h: HabitInputs): Reflection {
   const goal = HABIT_GOALS.find((g) => g.id === h.goalId) ?? HABIT_GOALS[0];
-  const days = goal.plan[Math.min(h.level, goal.plan.length - 1)].map((d) => d.replace("{WHEN}", h.when.toLowerCase()));
+  const levelIdx = Math.min(h.level, goal.plan.length - 1);
+  const levelText = goal.levels[levelIdx] ?? goal.levels[0];
+  const days = goal.plan[levelIdx].map((d) => d.replace("{WHEN}", h.when.toLowerCase()));
+  const versions = GOAL_VERSIONS[goal.id] ?? GOAL_VERSIONS.move;
   const sections: Section[] = [];
+
+  const evidence: Evidence[] = [
+    { id: "ev-goal", statement: `The habit — you selected: ${goal.label.toLowerCase()}`, sourceQuestionId: "goal", sourceAnswer: goal.label },
+    { id: "ev-level", statement: `Where you're starting from — you selected: “${levelText.toLowerCase()}”`, sourceQuestionId: "level", sourceAnswer: levelText },
+    { id: "ev-obstacle", statement: `What usually kills it — you selected: “${h.obstacle.toLowerCase()}”`, sourceQuestionId: "obstacle", sourceAnswer: h.obstacle },
+    { id: "ev-when", statement: `Your most reliable pocket of time — you selected: ${h.when.toLowerCase()}`, sourceQuestionId: "when", sourceAnswer: h.when },
+  ];
 
   sections.push({
     heading: `Your 7-day starter — ${goal.label.toLowerCase()}`,
+    kind: "plan",
     bullets: days,
-    note: goal.note ?? "Sized to where you are, not where you wish you were. Small on purpose — the first week's only job is to exist.",
+    note: goal.note ?? "Sized to where you said you are, not where you wish you were. Small on purpose — the first week's only job is to exist.",
   });
 
   sections.push({
     heading: "The two rules that make it work",
+    kind: "custom",
     bullets: [
       "Too small to skip: if a day's step feels laughably easy, it's correctly sized. You're building the showing-up, not the results — those come free later.",
       "Never miss twice: one missed day is nothing. Zero drama, no makeup double. Just don't let it become two.",
@@ -278,13 +311,67 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
   });
 
   sections.push({
-    heading: "Your blind spot to check",
-    paragraphs: [OBSTACLE_READS[h.obstacle] ?? OBSTACLE_READS["I start too big and quit"]],
-    note: "You named the obstacle yourself — this is just what it usually means.",
+    heading: "The week, as an experiment",
+    kind: "experiment",
+    experiment: {
+      title: "Run the seven days above",
+      action: `Run the plan at ${h.when.toLowerCase()}, at whatever size actually happens.`,
+      rationale: `You picked ${goal.label.toLowerCase()}, starting from “${levelText.toLowerCase()}”, with “${h.obstacle.toLowerCase()}” as the usual killer — the plan is sized to exactly that.`,
+      duration: "7 days",
+      observe: [
+        "Which days happened, which didn't, and what was different about them",
+        "Whether the obstacle you named is the one that actually showed up",
+      ],
+      busyVersion: versions.busy,
+      minimumVersion: versions.minimum,
+      permissionToAdjust: "Shrinking a day is success, not failure — the week's only job is to exist. Completing it isn't virtue and missing days isn't a verdict.",
+    },
+  });
+
+  sections.push({
+    heading: "One thing that may make this harder",
+    kind: "interpretations",
+    interpretations: [
+      {
+        id: "int-obstacle",
+        possibility: OBSTACLE_READS[h.obstacle] ?? OBSTACLE_READS["I start too big and quit"],
+        evidenceIds: ["ev-obstacle"],
+        confidence: "plausible",
+        alternative: OBSTACLE_ALTS[h.obstacle] ?? OBSTACLE_ALTS["I start too big and quit"],
+        checkQuestion: "Does this match how it usually goes for you?",
+      },
+    ],
+    note: "You named the obstacle yourself — this is one possibility for what it tends to mean, not a diagnosis of you.",
+  });
+
+  sections.push({
+    heading: "What might challenge this reading",
+    kind: "challenge",
+    bullets: [
+      "One week can start a habit; it can't prove or disprove one.",
+      `You named “${h.obstacle.toLowerCase()}” — if a day gets missed, check whether that was actually the cause before rewriting the plan.`,
+      "Three taps size a plan roughly. If the week feels wrong by day three, the sizing missed — not you.",
+    ],
+  });
+
+  sections.push({
+    heading: "What you told it",
+    kind: "facts",
+    note: "The whole plan is built from these four taps — nothing else.",
+  });
+
+  sections.push({
+    heading: "Continue the reflection",
+    kind: "questions",
+    bullets: [
+      "Which day of the plan looks least realistic from here?",
+      "What made the easiest day easy — and can that condition be copied?",
+    ],
   });
 
   sections.push({
     heading: "What this is — and isn't",
+    kind: "resources",
     paragraphs: [
       "A starter week, not a medical program. For health conditions, injuries, or eating patterns that worry you, a doctor beats any plan on a screen — and starting smaller than this page suggests is always allowed.",
     ],
@@ -293,9 +380,11 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
   return {
     id: newId(),
     mode: "habits",
-    title: `7-Day Starter — ${goal.label.toLowerCase()}`,
+    title: `7-Day Habit Starter — ${goal.label.toLowerCase()}`,
     createdAt: Date.now(),
     sections,
+    evidence,
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
     meta: { goal: goal.label, goalEmoji: goal.emoji, when: h.when },
   };
 }

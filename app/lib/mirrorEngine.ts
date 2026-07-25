@@ -2,8 +2,8 @@
 // Every observation is traceable to matched prompts. No scoring is hidden,
 // no personality types are assigned, nothing leaves the browser.
 
-import type { Answers, Reflection, Section } from "./types";
-import { answerText, newId } from "./types";
+import type { Answers, Evidence, Observation, Reflection, Section } from "./types";
+import { answerText, newId, REFLECTION_SCHEMA_VERSION } from "./types";
 import { assessSafetyAll, type SafetyHit } from "./safety";
 
 /** Pasted lines that read like an AI analyzing the user, not a prompt. */
@@ -272,12 +272,30 @@ export const MIRROR_FOLLOWUPS = [
 
 // ---- compose the result ----
 
+const TRAP_ALTS: Record<string, { alternative: string; check: string }> = {
+  plans_no_finish: { alternative: "Finishing may simply live outside your AI window — shipped work doesn't always generate prompts.", check: "What did you finish last month that never touched AI?" },
+  reassurance_loop: { alternative: "A season of genuine uncertainty can produce this pattern without it being a loop.", check: "Is there one question underneath most of these checks?" },
+  outsourced_judgment: { alternative: "Handing AI decisions can be deliberate delegation of low-stakes calls — the question is whether the high-stakes ones stay yours.", check: "Which recent decision would you not have delegated?" },
+  novelty: { alternative: "Exploration phases look exactly like this on purpose — the check is whether one thing eventually gets picked.", check: "Which of the started things still matters a month later?" },
+  no_verify: { alternative: "Verification may happen off-screen — in tests, in practice, in results.", check: "Where did the last confident answer get checked, if anywhere?" },
+  proxy_conversation: { alternative: "Rehearsing with AI before a hard conversation can be preparation rather than avoidance — if the conversation eventually happens.", check: "Has the real conversation happened yet?" },
+};
+
 export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answers): Reflection {
   const a = analysis;
   const sections: Section[] = [];
 
+  // evidence pool: the categories' counts and examples, plus any typed follow-ups
+  const evidence: Evidence[] = a.categories.slice(0, 8).map((c) => ({
+    id: `ev-cat-${c.id}`,
+    statement: `${c.label}: ${c.count} of ${a.promptCount} pasted prompts (e.g. “${c.example}”)`,
+    sourcePrompt: c.example,
+  }));
+  evidence.push({ id: "ev-count", statement: `You pasted ${a.promptCount} prompt${a.promptCount === 1 ? "" : "s"} and chose which ones to include` });
+
   sections.push({
     heading: "Your AI use in one sentence",
+    kind: "summary",
     paragraphs: [a.summary],
     note: "This describes the prompts you pasted — not your whole life, and not who you are.",
   });
@@ -285,6 +303,7 @@ export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answer
   if (a.categories.length) {
     sections.push({
       heading: "Your main uses",
+      kind: "facts",
       bullets: a.categories.slice(0, 6).map((c) => `${c.label} — ${c.count} of ${a.promptCount} prompts. e.g. “${c.example}”`),
     });
   }
@@ -333,12 +352,45 @@ export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answer
   if (a.traps.length) {
     sections.push({
       heading: "Patterns worth watching",
-      bullets: a.traps.map((t) => t.text),
-      note: "Only you know whether these fit. They're observations from a limited window, not verdicts.",
+      kind: "interpretations",
+      interpretations: a.traps.map((t) => ({
+        id: `int-${t.id}`,
+        possibility: t.text.replace(/^One pattern worth watching: /, ""),
+        evidenceIds: evidence.filter((e) => e.id.startsWith("ev-cat-")).map((e) => e.id).slice(0, 3),
+        confidence: "tentative" as const,
+        alternative: TRAP_ALTS[t.id]?.alternative,
+        checkQuestion: TRAP_ALTS[t.id]?.check,
+      })),
+      note: "Only you know whether these fit. They're possibilities from a limited window, not verdicts.",
     });
   }
 
-  sections.push({ heading: "One experiment for using AI better", paragraphs: [a.experiment] });
+  sections.push({
+    heading: "One experiment for using AI better",
+    kind: "experiment",
+    experiment: {
+      title: "A one-week experiment",
+      action: a.experiment,
+      rationale: a.traps[0]
+        ? "It targets the first pattern worth watching above — the one your prompt set showed most clearly."
+        : `It follows from your biggest use: ${a.categories[0]?.phrase ?? "how you used AI in this set"}.`,
+      duration: "One week",
+      observe: ["Whether it changed what you asked AI for", "Whether the pattern it targets showed up again"],
+      permissionToAdjust: "If it doesn't fit your actual week, shrink it — one honest try produces more information than seven intended ones.",
+    },
+  });
+
+  sections.push({
+    heading: "What might challenge this reading",
+    kind: "challenge",
+    bullets: [
+      "You chose which prompts to paste — the selection itself shapes everything above.",
+      a.promptCount < 10
+        ? `${a.promptCount} prompts is a small sample; a different batch could tell a different story.`
+        : "These prompts may span an unknown stretch of time — a busy season can dominate a set like this.",
+      "Word-matching can miscategorize — a prompt about a “budget app you're building” counts as money and building alike.",
+    ],
+  });
 
   if (a.pastedAnalysis.count > 0) {
     sections.push({
@@ -360,22 +412,53 @@ export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answer
     ],
   });
 
-  // follow-up answers, if given
+  // follow-up answers, if given — the user's review of the read, kept
+  // separate and senior to the word-counting above
   if (followups) {
-    const read: string[] = [];
+    const read: Observation[] = [];
+    const fev = (id: string, label: string, sensitive?: boolean): string => {
+      const v = answerText(followups, id);
+      evidence.push(
+        sensitive
+          ? { id: `ev-fu-${id}`, statement: `${label} — in your words: “${v}”`, sourceQuestionId: id, sourceAnswer: v, sensitive: "written", redactedStatement: `${label} — a written answer (kept private)` }
+          : { id: `ev-fu-${id}`, statement: `${label} — you selected: ${v}`, sourceQuestionId: id, sourceAnswer: v }
+      );
+      return `ev-fu-${id}`;
+    };
     const acc = answerText(followups, "accurate");
-    if (acc) read.push(acc === "Honestly, not much of it" ? "You said most of this read didn't land — good. Trust your own account over a word-counter." : `You said the most accurate part was: ${acc.toLowerCase()}.`);
+    if (acc)
+      read.push({
+        id: "obs-fu-acc",
+        statement:
+          acc === "Honestly, not much of it"
+            ? "You marked this read as mostly inaccurate. Where this page and your account disagree, your account wins — it saw the context; the word-counter didn't."
+            : `You said the most accurate part was: ${acc.toLowerCase()}.`,
+        evidenceIds: [fev("accurate", "Which part felt most accurate")],
+        confidence: "direct",
+      });
     const sc = answerText(followups, "start_complete");
-    if (sc === "Starting") read.push("You said you use AI more for starting than completing. That makes the experiment above more important than anything else on this page.");
-    else if (sc === "Completing") read.push("You said you use AI more for completing than starting — a pattern many people never build.");
+    if (sc === "Starting")
+      read.push({ id: "obs-fu-sc", statement: "You said you use AI more for starting than completing. That makes the experiment above more relevant than anything else on this page.", evidenceIds: [fev("start_complete", "Starting or completing")], confidence: "direct" });
+    else if (sc === "Completing")
+      read.push({ id: "obs-fu-sc", statement: "You said you use AI more for completing than starting — a pattern many people never build.", evidenceIds: [fev("start_complete", "Starting or completing")], confidence: "direct" });
     const mo = answerText(followups, "matters_offscreen");
-    if (mo) read.push(`The recurring topic that matters most off-screen, in your words: “${mo}”.`);
+    if (mo) read.push({ id: "obs-fu-mo", statement: `The recurring topic that matters most off-screen, in your words: “${mo}”.`, evidenceIds: [fev("matters_offscreen", "What matters most off-screen", true)], confidence: "direct" });
     const px = answerText(followups, "proxy");
-    if (px === "Yes" || px === "Maybe") read.push("You said there may be a conversation or decision you're routing through AI instead of handling directly. Worth naming what it is — and who it's with.");
+    if (px === "Yes" || px === "Maybe")
+      read.push({ id: "obs-fu-px", statement: "You said there may be a conversation or decision being routed through AI instead of handled directly. Worth naming what it is — and who it's with.", evidenceIds: [fev("proxy", "A conversation routed through AI")], confidence: "direct" });
     const bf = answerText(followups, "benefit");
-    if (bf) read.push(`Most real-world benefit so far: “${bf}”. More of that.`);
-    if (read.length) sections.push({ heading: "Your read on it", bullets: read });
+    if (bf) read.push({ id: "obs-fu-bf", statement: `Most real-world benefit so far, in your words: “${bf}”. More of that.`, evidenceIds: [fev("benefit", "Most real-world benefit", true)], confidence: "direct" });
+    if (read.length) sections.push({ heading: "Your read on it", kind: "observations", observations: read, note: "Your review of the analysis — kept senior to the analysis itself." });
   }
+
+  sections.push({
+    heading: "Continue the reflection",
+    kind: "questions",
+    bullets: [
+      followups ? "What important context is missing that no prompt window could show?" : "Which part of this read feels least accurate? (The follow-up questions below the result let you say so.)",
+      a.missing.length ? `Is “${a.missing[0]}” genuinely absent from your life, or just from this window?` : "What do you deliberately keep away from AI — and why?",
+    ],
+  });
 
   const followupHit = followups ? assessSafetyAll(["matters_offscreen", "benefit"].map((id) => answerText(followups, id))) : null;
   const hit = [a.safety, followupHit].filter((h) => h && h.level !== "mention").sort((x, y) => (y!.level === "immediate" ? 1 : 0) - (x!.level === "immediate" ? 1 : 0))[0] ?? null;
@@ -386,6 +469,8 @@ export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answer
     title: `AI Mirror — ${a.promptCount} prompts`,
     createdAt: Date.now(),
     sections,
+    evidence,
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
     safetyFlagged: !!hit,
     meta: {
       ...(hit ? { safetyKind: hit.kind, safetyLevel: hit.level } : {}),

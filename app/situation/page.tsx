@@ -112,7 +112,7 @@ export default function SituationPage() {
               {typeof result.meta?.patternEmoji === "string" ? result.meta.patternEmoji : "🧭"}
             </div>
             <p style={{ fontSize: 13, fontWeight: 800, color: pal.sub, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 6px" }}>
-              This situation has a shape
+              A possible shape in this situation
             </p>
             <h1 style={{ fontSize: "clamp(1.6rem, 8vw, 2.2rem)", fontWeight: 900, color: pal.text, margin: 0, lineHeight: 1.15 }}>
               {typeof result.meta?.pattern === "string" ? result.meta.pattern : "The read"}

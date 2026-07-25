@@ -4,8 +4,8 @@
 // If the math says underwater, it says so plainly — structural problem,
 // not a willpower failure — and points at real help.
 
-import type { Reflection, Section } from "./types";
-import { newId } from "./types";
+import type { Evidence, Reflection, Section } from "./types";
+import { newId, REFLECTION_SCHEMA_VERSION } from "./types";
 
 export type MoneyInputs = {
   income: number; // monthly take-home
@@ -57,7 +57,7 @@ function detectPattern(m: MoneyInputs): MoneyPattern {
         `Your numbers say the month costs more than it brings in${m.income > 0 ? ` — about ${money(-margin)} more` : ""}. Hear this first: that is a structural problem, not a willpower problem. No amount of skipping coffee closes a gap between rent and a paycheck.`,
         "Structural problems have structural moves: raising income, renegotiating the big fixed costs (housing, car, debt terms), or getting real help with both. Small-purchase guilt is a distraction at this depth — put it down.",
       ],
-      blindspot: "Shame. It keeps people underwater silent, and silent people don't ask for the help that actually exists. You did the brave thing by running the numbers at all.",
+      blindspot: "One possibility worth checking: shame keeps many people in this position silent, and silent people don't reach the help that actually exists. Running the numbers at all was the opposite of avoidance.",
       step: "Two calls this week: dial 211 (United Way — free, local help with bills, housing, and assistance programs) and the NFCC at 1-800-388-2227 (nonprofit credit counseling, free or nearly free). Fifteen minutes each. That's the whole assignment.",
     };
 
@@ -114,10 +114,10 @@ function detectPattern(m: MoneyInputs): MoneyPattern {
       emoji: "🥊",
       name: "The Two-Ledger House",
       read: [
-        "Your numbers hold up — the fight isn't really the math. When money fights recur at home, it's almost never dollars versus dollars; it's meaning versus meaning. One of you spends for security, one for joy, or one tracks and one trusts — two honest ledgers, colliding in one checking account.",
-        "That's why the fights repeat: each round argues a purchase, but the disagreement is about what money is for. That question never gets asked at receipt-discovery volume.",
+        "Your numbers hold up — so the recurring fight may not really be the math. One common possibility when money fights repeat despite workable numbers: two honest ledgers colliding in one checking account — one person spends for security and one for joy, or one tracks and one trusts.",
+        "That would explain why the fights repeat: each round argues a purchase, but the disagreement underneath is about what money is for — a question that never gets asked at receipt-discovery volume.",
       ],
-      blindspot: "The most expensive thing in a two-ledger house is what goes unsaid between fights — quiet purchases, rounded-down confessions, small hidings that feel like peacekeeping. They're loans against trust, and that interest rate is brutal.",
+      blindspot: "One possibility worth checking: what goes unsaid between fights — quiet purchases, rounded-down confessions, small hidings that feel like peacekeeping — may be costing more than the purchases themselves.",
       step: "Book a 15-minute money meeting this week — coffee, calendar, no ambush. One rule: no blame for anything already spent; the past is amnestied. One agenda: “What should our money do next month?” Fifteen minutes, ends on time, repeats weekly. Boring meetings prevent loud fights.",
     };
 
@@ -133,40 +133,138 @@ function detectPattern(m: MoneyInputs): MoneyPattern {
   };
 }
 
+/** 2.0 companions per pattern: competing reading + check + experiment framing. */
+const MONEY_EXTRAS: Record<string, { alternative: string; check: string; observe: string[]; minimum: string }> = {
+  "The Underwater Month": {
+    alternative: "One atypical month — a repair, a job gap, an annual bill — can also produce these numbers. If most months look like this one, the structural read stands.",
+    check: "Was this month a typical one?",
+    observe: ["What each call actually offered", "Which fixed cost turned out most movable"],
+    minimum: "One call instead of two — 211 first.",
+  },
+  "The Debt Drag": {
+    alternative: "If the balances are recent or the rates are low, the drag may be temporary rather than structural — the list will show which.",
+    check: "Do the balances actually move month to month?",
+    observe: ["The full list: balance, rate, minimum for each debt", "How the total compares to what you assumed"],
+    minimum: "List just the balances — rates can wait a day.",
+  },
+  "The Fog": {
+    alternative: "The gap between should-be-left and is-left can also be a categorization problem — irregular expenses that never made it into 'essentials'.",
+    check: "Did anything irregular hit this month that the numbers don't show?",
+    observe: ["Where the money actually went, line by line", "Whether one or two specific leaks account for most of the gap"],
+    minimum: "Track just today.",
+  },
+  "The No-Cushion Tightrope": {
+    alternative: "Savings may exist that these three numbers never asked about — the surprise answer, not the math, drove this read.",
+    check: "Is there money somewhere this check didn't count?",
+    observe: ["Whether the transfer actually ran on payday", "How it felt to not touch it"],
+    minimum: "Open the separate account this week; fund it next payday.",
+  },
+  "The Leaky Bucket": {
+    alternative: "What reads as impulse can be under-planned regular needs — if the same 'impulse' repeats monthly, it may belong in the budget, not on the guilt list.",
+    check: "Do the impulse buys repeat, or are they truly one-offs?",
+    observe: ["How many list items you still wanted after 24 hours", "What the impulse moments had in common"],
+    minimum: "Just the 24-hour rule — skip the other two moves.",
+  },
+  "The Two-Ledger House": {
+    alternative: "Sometimes the fight really is the dollars — if the margin is thinner than it looks, no meeting about meaning fixes math.",
+    check: "Would both of you describe the disagreement the same way?",
+    observe: ["Whether the meeting happened and ended on time", "What surfaced that receipt-moments never surface"],
+    minimum: "Book the meeting; even 5 minutes counts as run.",
+  },
+  "The Quiet Surplus": {
+    alternative: "Numbers this clean can also reflect a snapshot month — annual and irregular costs may be hiding outside it.",
+    check: "Does the margin survive December and car-repair months?",
+    observe: ["Whether the split got written down", "Whether the first automated piece actually ran"],
+    minimum: "Name one job for the margin — automation can wait a week.",
+  },
+};
+
 export function composeMoneyResult(m: MoneyInputs): Reflection {
   const margin = m.income - m.essentials - m.debt;
   const essPct = m.income > 0 ? Math.round((m.essentials / m.income) * 100) : 0;
   const debtPct = m.income > 0 ? Math.round((m.debt / m.income) * 100) : 0;
+  const marginPct = m.income > 0 ? Math.round((margin / m.income) * 100) : 0;
   const p = detectPattern(m);
+  const x = MONEY_EXTRAS[p.name] ?? MONEY_EXTRAS["The Fog"];
   const sections: Section[] = [];
 
-  const numbers: string[] = [
-    `Take-home: ${money(m.income)} a month`,
-    `Essentials: ${money(m.essentials)} (${essPct}% of take-home)`,
-    `Debt payments: ${money(m.debt)} (${debtPct}%)`,
-    margin >= 0
-      ? `Left over on paper: ${money(margin)} a month — about ${money(margin / 30)} a day`
-      : `Short each month: ${money(-margin)}`,
+  // ---- evidence: the calculations, separated from any interpretation ----
+  const evidence: Evidence[] = [
+    { id: "ev-income", statement: `Take-home, as you entered it: ${money(m.income)} a month`, sourceQuestionId: "income", sourceAnswer: String(m.income), sensitive: "financial", redactedStatement: "Take-home: entered (exact amount kept private)" },
+    { id: "ev-essentials", statement: `Essentials, as you entered them: ${money(m.essentials)} (${essPct}% of take-home)`, sourceQuestionId: "essentials", sourceAnswer: String(m.essentials), sensitive: "financial", redactedStatement: `Essentials: about ${essPct}% of take-home` },
+    { id: "ev-debt", statement: `Debt payments, as you entered them: ${money(m.debt)} (${debtPct}% of take-home)`, sourceQuestionId: "debt", sourceAnswer: String(m.debt), sensitive: "financial", redactedStatement: `Debt payments: about ${debtPct}% of take-home` },
+    {
+      id: "ev-margin",
+      statement: margin >= 0 ? `Calculated: ${money(margin)} a month left over on paper — about ${money(margin / 30)} a day` : `Calculated: short ${money(-margin)} each month`,
+      sensitive: "financial",
+      redactedStatement: margin >= 0 ? `Calculated margin: about ${marginPct}% of take-home` : "Calculated: the month costs more than it brings in",
+    },
+    { id: "ev-stress", statement: `Biggest money stress — you selected: ${m.stress.toLowerCase()}`, sourceQuestionId: "stress", sourceAnswer: m.stress },
+    { id: "ev-track", statement: `Do you know where last month went — you selected: ${m.track.toLowerCase()}`, sourceQuestionId: "track", sourceAnswer: m.track },
+    { id: "ev-surprise", statement: `A $500 surprise this week — you selected: ${m.surprise.toLowerCase()}`, sourceQuestionId: "surprise", sourceAnswer: m.surprise },
   ];
+
   sections.push({
     heading: "Your numbers, plainly",
-    bullets: numbers,
-    note: "A common guideline puts essentials near 50% of take-home — a reference point, not a rule, and high-rent areas break it routinely.",
+    kind: "facts",
+    note: "The math and your three taps, nothing else. A common guideline puts essentials near 50% of take-home — a reference point, not a rule, and high-rent areas break it routinely.",
   });
 
   sections.push({
-    heading: "The read",
+    heading: `A shape this could fit: ${p.name}`,
+    kind: "interpretations",
     paragraphs: p.read,
-    note: "This names the shape of the money situation — not your character.",
+    interpretations: [
+      {
+        id: "int-money",
+        possibility: `this picture may fit “${p.name}” — see the read above.`,
+        evidenceIds: ["ev-margin", "ev-stress", "ev-track", "ev-surprise"],
+        confidence: "plausible",
+        alternative: x.alternative,
+        checkQuestion: x.check,
+      },
+    ],
+    note: "A possible shape of the money situation — not a judgment of you, and the numbers stay separate from it above.",
   });
 
-  sections.push({ heading: "The blind spot to check", paragraphs: [p.blindspot], note: "Only you know whether it fits." });
-  sections.push({ heading: "One money move for the next 7 days", paragraphs: [p.step] });
+  sections.push({
+    heading: "A possibility to check",
+    kind: "interpretations",
+    interpretations: [{ id: "int-money-check", possibility: p.blindspot, evidenceIds: ["ev-stress", "ev-track"], confidence: "tentative", checkQuestion: "If this doesn't fit, what's the more accurate description?" }],
+    note: "Only you know whether it fits.",
+  });
+
+  sections.push({
+    heading: "What might challenge this reading",
+    kind: "challenge",
+    bullets: [
+      "Irregular expenses — car repairs, annual bills, gifts — may be missing from these essentials.",
+      "This month may not be a typical month.",
+      "Bill timing can make a monthly margin look better or worse than it is.",
+      "Three numbers can't say whether the pressure sits in income, expenses, debt, or simply incomplete data.",
+    ],
+  });
+
+  sections.push({
+    heading: "A 7-day experiment",
+    kind: "experiment",
+    experiment: {
+      title: "One money move for the next 7 days",
+      action: p.step,
+      rationale: `It follows from your own inputs — you selected “${m.stress.toLowerCase()}” as the biggest stress, and the math above says ${margin >= 0 ? `about ${money(margin)} clears the month on paper` : "the month runs short"}.`,
+      duration: "7 days",
+      observe: x.observe,
+      minimumVersion: x.minimum,
+      permissionToAdjust: "If the week goes sideways, run the minimum version and call it done — the experiment exists to produce information, not a grade.",
+    },
+  });
 
   sections.push({
     heading: "What this is — and isn't",
+    kind: "resources",
     paragraphs: [
-      "Four numbers and three taps can find a pattern; they can't see your whole financial life. This isn't financial advice — for debt strategy, taxes, or investing, a real professional (or the free nonprofit counselors at NFCC, 1-800-388-2227) beats any tool.",
+      "This mode is a reflection and learning tool, not individualized financial advice. Four numbers and three taps can suggest a shape; they can't see your whole financial life.",
+      "For serious debt, foreclosure, bankruptcy, tax, investing, or legal questions, the right help is a licensed professional: the free nonprofit counselors at NFCC (1-800-388-2227), a HUD-approved housing counselor, or an attorney.",
     ],
   });
 
@@ -176,6 +274,8 @@ export function composeMoneyResult(m: MoneyInputs): Reflection {
     title: `Money Check — ${p.name.toLowerCase()}`,
     createdAt: Date.now(),
     sections,
+    evidence,
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
     meta: { pattern: p.name, patternEmoji: p.emoji, margin: Math.round(margin) },
   };
 }

@@ -1,9 +1,11 @@
 // My Situation — one thing, thought through in about 8 taps.
-// No required typing. The result names the SHAPE of the situation
-// (never the person), points at one blind spot, and gives one step.
+// No required typing. The result offers a possible SHAPE of the situation
+// (never the person) — as one possibility with an alternative reading and
+// a question to test it, plus a small 7-day experiment. Every observation
+// traces to the answers that produced it.
 
-import type { Answers, Question, Reflection, Section } from "./types";
-import { answerText, newId } from "./types";
+import type { Answers, Evidence, Interpretation, Observation, Question, Reflection, Section } from "./types";
+import { answerText, newId, REFLECTION_SCHEMA_VERSION } from "./types";
 import { checkSafetyAll, type SafetyKind } from "./safety";
 
 export const SITUATION_TYPES = [
@@ -64,6 +66,69 @@ type SituationPattern = {
   blindspot: string;
   step: string;
   ask: string;
+};
+
+/**
+ * 2.0 companions to each shape: a condensed one-line possibility, a
+ * competing reading (the app challenges itself, not only the user), and
+ * which answers triggered it.
+ */
+const PATTERN_EXTRAS: Record<string, { possibility: string; alternative: string; triggers: string[] }> = {
+  phantom_deadline: {
+    possibility: "the pressure here may be a phantom deadline — real urgency as a feeling, with no actual date behind it",
+    alternative: "A real consequence may exist that simply hasn't been written down as a date yet. Naming it would tell you which this is.",
+    triggers: ["deadline"],
+  },
+  already_known: {
+    possibility: "the thinking may already be done — what's left may be the doing",
+    alternative: "Advice you'd give a friend can also be too simple for the inside view. Your hesitation may know something the easy answer doesn't.",
+    triggers: ["friend"],
+  },
+  unasked: {
+    possibility: "part of the weight may be a conversation that hasn't happened yet",
+    alternative: "Some questions stay unasked for good reasons — timing, safety, history. Only you know whether this is avoidance or wisdom.",
+    triggers: ["asked"],
+  },
+  certainty_wait: {
+    possibility: "this wait may have no end condition — certainty rarely arrives on schedule",
+    alternative: "Sometimes waiting is itself the decision that fits. If the real cost of waiting is low, patience may be strategy rather than stalling.",
+    triggers: ["waiting"],
+  },
+  permission_slip: {
+    possibility: "the permission being waited on may not be held by anyone but you",
+    alternative: "There may be a real gatekeeper here — in which case this is a conversation to schedule, not a fear to out-wait.",
+    triggers: ["waiting"],
+  },
+  slow_leak: {
+    possibility: "time plus avoidance may be quietly raising the price of this",
+    alternative: "Some things do resolve with time. The check is whether this one has actually gotten smaller — or just quieter.",
+    triggers: ["duration", "tried"],
+  },
+  missing_fact: {
+    possibility: "one gettable fact may be the actual blocker",
+    alternative: "If the missing information keeps changing shape, the blocker may be the decision itself, not the data.",
+    triggers: ["waiting"],
+  },
+  open_door: {
+    possibility: "this may be a reversible choice carrying irreversible-level caution",
+    alternative: "Reversible on paper isn't always reversible in relationships or momentum — worth pricing what undoing would really cost.",
+    triggers: ["reversible"],
+  },
+  fresh_cut: {
+    possibility: "the feelings may still be too fresh for the decision to see straight",
+    alternative: "Fresh anger is sometimes accurate anger. The 72-hour pause tests it either way — it costs nothing if the anger was right.",
+    triggers: ["duration", "feeling"],
+  },
+  overthought_loop: {
+    possibility: "more thinking may have stopped adding information some laps ago",
+    alternative: "It's also possible something changed recently and another look is genuinely warranted. The check: has anything new entered since the last lap?",
+    triggers: ["tried"],
+  },
+  crossroads: {
+    possibility: "this may simply be a genuinely hard decision — real options, real trade-offs, no move that gets everything",
+    alternative: "There isn't enough in eight taps to say more confidently — which is itself worth knowing.",
+    triggers: [],
+  },
 };
 
 const HOT_FEELINGS = ["Angry", "Hurt", "Afraid", "Overwhelmed", "Ashamed"];
@@ -174,7 +239,7 @@ function detectPattern(a: Answers): SituationPattern {
       read: [
         `This happened days ago and the feelings are still hot — ${feelings.join(" and ").toLowerCase()} is a lot of current running through a decision. Fresh pain is real, but it's also a distorting lens: it makes temporary things look permanent and small things look fatal.`,
       ],
-      blindspot: "The move you most want to make right now is probably the one calibrated to how much it hurts, not to what the situation needs. Those are rarely the same move.",
+      blindspot: "The move that most wants to be made right now may be calibrated to how much it hurts, not to what the situation needs. Those are rarely the same move.",
       step: "Give it 72 hours before anything irreversible — no big texts, no announcements, no burned bridges. Use the time to write the angriest, most honest version somewhere private. Then decide.",
       ask: "“I'm still hot about this — tell me honestly, does my planned response match the size of what happened?”",
     };
@@ -205,6 +270,18 @@ function detectPattern(a: Answers): SituationPattern {
 
 // ---- result composition ----
 
+const QUESTION_PHRASE: Record<string, string> = {
+  duration: "How long it's been sitting on you",
+  feeling: "Strongest feelings in it",
+  deadline: "Is there an actual deadline",
+  waiting: "What you're waiting for",
+  asked: "Have you asked the other person",
+  safe: "Safe enough for a direct conversation",
+  reversible: "Is the option reversible",
+  friend: "What you'd tell a friend",
+  tried: "What you've already tried",
+};
+
 export function composeSituationResult(type: SituationType, a: Answers): Reflection {
   const t = (id: string) => answerText(a, id);
   const sections: Section[] = [];
@@ -212,49 +289,137 @@ export function composeSituationResult(type: SituationType, a: Answers): Reflect
   const safety: SafetyKind | null = checkSafetyAll([t("name_it")]);
   const unsafe = safety === "abuse" || safety === "danger" || t("safe") === "No";
   const pattern = detectPattern(a);
+  const extras = PATTERN_EXTRAS[pattern.id] ?? PATTERN_EXTRAS.crossroads;
 
+  // ---- evidence: exactly what was said this session ----
+  const evidence: Evidence[] = [{ id: "ev-type", statement: `The kind of situation — you selected: ${label.toLowerCase()}`, sourceQuestionId: "type", sourceAnswer: label }];
+  for (const [qid, phrase] of Object.entries(QUESTION_PHRASE)) {
+    if (t(qid)) evidence.push({ id: `ev-${qid}`, statement: `${phrase} — you selected: ${t(qid).toLowerCase()}`, sourceQuestionId: qid, sourceAnswer: t(qid) });
+  }
+  if (t("name_it")) {
+    evidence.push({
+      id: "ev-name_it",
+      statement: `In your words: “${t("name_it")}”`,
+      sourceQuestionId: "name_it",
+      sourceAnswer: t("name_it"),
+      sensitive: "written",
+      redactedStatement: "A one-line description you wrote (kept private)",
+    });
+  }
+  const evIds = (ids: string[]) => ids.map((q) => `ev-${q}`).filter((id) => evidence.some((e) => e.id === id));
+  const skipped = Object.keys(QUESTION_PHRASE).filter((qid) => !t(qid) && ["duration", "feeling", "deadline", "waiting", "friend", "tried"].includes(qid)).length;
+
+  // ---- a possible shape (interpretation, not verdict) ----
+  const readInterp: Interpretation = {
+    id: "int-shape",
+    possibility: extras.possibility,
+    evidenceIds: evIds(extras.triggers),
+    confidence: pattern.id === "crossroads" ? "tentative" : "plausible",
+    alternative: extras.alternative,
+    checkQuestion: "Does this match your experience of it?",
+  };
   sections.push({
-    heading: "The read",
+    heading: `A possible shape: ${pattern.name}`,
+    kind: "interpretations",
     paragraphs: pattern.read,
-    note: "This names the shape of the situation — not you. Situations have patterns; people are bigger than patterns.",
+    interpretations: [readInterp],
+    note: "This offers a possible pattern in this situation — not a fact about you. Situations have shapes; people are bigger than them.",
   });
 
-  // supporting observations
-  const also: string[] = [];
+  sections.push({
+    heading: "What you told it",
+    kind: "facts",
+    note: "Only your selections and words from this session. The whole read above is built from these — nothing else.",
+  });
+
+  // ---- supporting observations, each traceable ----
+  const also: Observation[] = [];
   const feelings = Array.isArray(a["feeling"]) ? (a["feeling"] as string[]) : [];
-  if (feelings.length) also.push(`Strongest feelings in it: ${feelings.join(" and ").toLowerCase()}. Feelings are information about weight, not instructions about action.`);
-  if (t("deadline") === "Yes — a real date") also.push("There's a real deadline. That's a gift disguised as pressure — it does your prioritizing for you.");
-  if (t("asked") === "Partly") also.push("You've partly asked the other person for their side. The remaining gap is still being filled by assumption.");
-  if (t("reversible") === "Hard to reverse") also.push("The option you're leaning toward is hard to reverse. That's the one kind of decision that has earned your slowness — take the care it deserves.");
-  if (pattern.id !== "already_known" && t("friend") === "I know exactly what I'd say") also.push("You'd know exactly what to tell a friend in this spot. Worth writing that advice down — it's probably yours too.");
-  if (t("name_it")) also.push(`In your words: “${t("name_it")}”`);
-  if (also.length) sections.push({ heading: "Also in the mix", bullets: also.slice(0, 3) });
+  if (feelings.length)
+    also.push({ id: "obs-feel", statement: `Strongest feelings in it, as you named them: ${feelings.join(" and ").toLowerCase()}. Feelings are information about weight, not instructions about action.`, evidenceIds: evIds(["feeling"]), confidence: "direct" });
+  if (t("deadline") === "Yes — a real date")
+    also.push({ id: "obs-deadline", statement: "There's a real deadline. That can work as a gift disguised as pressure — it does the prioritizing for you.", evidenceIds: evIds(["deadline"]), confidence: "direct" });
+  if (t("asked") === "Partly")
+    also.push({ id: "obs-asked", statement: "You've partly asked the other person for their side — so part of the picture may still be assumption.", evidenceIds: evIds(["asked"]), confidence: "plausible" });
+  if (t("reversible") === "Hard to reverse")
+    also.push({ id: "obs-rev", statement: "The option you're leaning toward is hard to reverse — the one kind of decision that has earned slowness.", evidenceIds: evIds(["reversible"]), confidence: "direct" });
+  if (pattern.id !== "already_known" && t("friend") === "I know exactly what I'd say")
+    also.push({ id: "obs-friend", statement: "You said you'd know exactly what to tell a friend in this spot. Worth writing that advice down and seeing if it's also yours.", evidenceIds: evIds(["friend"]), confidence: "direct" });
+  if (also.length) sections.push({ heading: "Also in the mix", kind: "observations", observations: also.slice(0, 3) });
 
   sections.push({
-    heading: "The blind spot to check",
-    paragraphs: [pattern.blindspot],
+    heading: "A possibility to check",
+    kind: "interpretations",
+    interpretations: [
+      {
+        id: "int-check",
+        possibility: pattern.blindspot,
+        evidenceIds: evIds(extras.triggers),
+        confidence: "tentative",
+        checkQuestion: "If this doesn't fit, what's the more accurate description?",
+      },
+    ],
     note: "Only you know whether this fits. If it doesn't, discard it.",
   });
 
-  sections.push({
-    heading: "One step for the next 7 days",
-    paragraphs: [
-      unsafe
-        ? "Because safety came up in your answers, the honest next step is not a confrontation and not a solo move. Talk with a counselor, advocate, or trusted person who can help you plan safely — the resources above come first."
-        : pattern.step,
-    ],
-  });
+  // ---- what might challenge this reading (result-specific) ----
+  const challenge: string[] = [
+    "Eight taps compress a real situation. You may have picked the closest available answer rather than an exact one — if any answer was a stretch, the shape above may be off too.",
+  ];
+  if (skipped > 0) challenge.push(`You skipped ${skipped} question${skipped === 1 ? "" : "s"}, so the read never saw ${skipped === 1 ? "that part" : "those parts"}.`);
+  if (!t("name_it")) challenge.push("You didn't describe the situation in your own words, so this read is built entirely from menu choices.");
+  sections.push({ heading: "What might challenge this reading", kind: "challenge", bullets: challenge });
+
+  // ---- one small experiment (or safety-first path) ----
+  if (unsafe) {
+    sections.push({
+      heading: "One step for the next 7 days",
+      kind: "plan",
+      paragraphs: [
+        "Because safety came up in your answers, the honest next step is not a confrontation and not a solo move. Talk with a counselor, advocate, or trusted person who can help you plan safely — the resources above come first.",
+      ],
+    });
+  } else {
+    const trigger = evidenceFirst(evidence, evIds(extras.triggers));
+    sections.push({
+      heading: "One small experiment",
+      kind: "experiment",
+      experiment: {
+        title: "One step for the next 7 days",
+        action: pattern.step,
+        rationale: trigger ? `This follows from your own answer — ${trigger.statement.charAt(0).toLowerCase()}${trigger.statement.slice(1)}.` : "This follows from the overall shape of your answers.",
+        duration: "7 days",
+        observe: [
+          "Whether the step actually happened — and if not, what specifically stopped it",
+          "Whether the shape above still fits once you've tried it",
+        ],
+        permissionToAdjust: "If the step is too big for this week, shrink it until it isn't. A smaller step that happens beats a right-sized one that doesn't.",
+      },
+    });
+  }
 
   sections.push({
     heading: "Take it to a person",
+    kind: "resources",
     paragraphs: [unsafe ? "Choose someone safe and steady, and let them help you carry this one." : `Find someone with enough context and enough honesty, and ask them: ${pattern.ask}`],
     note: "A tool can organize your thinking. A person who knows you can correct it. Don't skip the person.",
   });
 
   sections.push({
+    heading: "Continue the reflection",
+    kind: "questions",
+    bullets: [
+      "Which of your eight answers was the least exact fit?",
+      "What important context did the questions never ask about?",
+      pattern.id === "crossroads" ? "What would make one of the real options survivable enough to pick?" : `If “${pattern.name}” is wrong, what does the situation look like instead?`,
+    ],
+  });
+
+  sections.push({
     heading: "What this is — and isn't",
+    kind: "custom",
     paragraphs: [
-      "This is a read on how the situation looks from your eight answers — a shape, a blind spot, and a step. It's not a verdict, and not advice about major life changes. Those deserve real people, real counsel, and time.",
+      "This is how the situation looks from your eight answers — one possible shape, a possibility to check, and a small step. It's not a verdict, and not advice about major life changes. Those deserve real people, real counsel, and time.",
     ],
   });
 
@@ -264,6 +429,8 @@ export function composeSituationResult(type: SituationType, a: Answers): Reflect
     title: `Situation — ${label.toLowerCase()}`,
     createdAt: Date.now(),
     sections,
+    evidence,
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
     safetyFlagged: !!safety,
     meta: {
       ...(safety ? { safetyKind: safety } : {}),
@@ -274,4 +441,12 @@ export function composeSituationResult(type: SituationType, a: Answers): Reflect
       patternEmoji: pattern.emoji,
     },
   };
+}
+
+function evidenceFirst(pool: Evidence[], ids: string[]): Evidence | null {
+  for (const id of ids) {
+    const e = pool.find((x) => x.id === id);
+    if (e) return e;
+  }
+  return null;
 }
