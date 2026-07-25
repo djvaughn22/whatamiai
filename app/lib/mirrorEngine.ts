@@ -4,6 +4,10 @@
 
 import type { Answers, Reflection, Section } from "./types";
 import { answerText, newId } from "./types";
+import { assessSafetyAll, type SafetyHit } from "./safety";
+
+/** Pasted lines that read like an AI analyzing the user, not a prompt. */
+const PASTED_ANALYSIS = /^you (are|were|fear|tend|always|never|seem|sound|have (a|an)|need to|struggle with)\b/i;
 
 // ---- category rules ----
 
@@ -91,6 +95,8 @@ function topSubjects(prompts: string[]): { term: string; count: number }[] {
 
 export type MirrorAnalysis = {
   promptCount: number;
+  safety: SafetyHit | null;
+  pastedAnalysis: { count: number; example: string };
   categories: { id: string; label: string; phrase: string; count: number; pct: number; example: string }[];
   subjects: { term: string; count: number }[];
   roles: { label: string; detail: string; count: number }[];
@@ -236,8 +242,12 @@ export function analyzePrompts(prompts: string[]): MirrorAnalysis {
   const focus = c1 && c2 ? `${c1}, followed by ${c2}` : c1 ?? "a wide mix of topics";
   const summary = `Across the ${n} prompts you pasted, you mainly use AI ${rolePhrase}, with most attention on ${focus}.`;
 
+  const pastedLines = prompts.filter((p) => PASTED_ANALYSIS.test(p.trim()));
+
   return {
     promptCount: n,
+    safety: assessSafetyAll(prompts),
+    pastedAnalysis: { count: pastedLines.length, example: pastedLines[0] ? excerpt(pastedLines[0]) : "" },
     categories,
     subjects: topSubjects(prompts),
     roles,
@@ -330,6 +340,16 @@ export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answer
 
   sections.push({ heading: "One experiment for using AI better", paragraphs: [a.experiment] });
 
+  if (a.pastedAnalysis.count > 0) {
+    sections.push({
+      heading: "Pasted analysis, not confirmed fact",
+      kind: "custom",
+      paragraphs: [
+        `${a.pastedAnalysis.count} of the lines you pasted read like an AI's analysis of you rather than a prompt you wrote (e.g. “${a.pastedAnalysis.example}”). WhatAmIAI treats lines like that as pasted content — claims you can examine — not as facts about you. Nothing on this page restates them as true. You decide whether they fit.`,
+      ],
+    });
+  }
+
   sections.push({
     heading: "What these prompts can't tell you",
     bullets: [
@@ -357,13 +377,18 @@ export function composeMirrorResult(analysis: MirrorAnalysis, followups?: Answer
     if (read.length) sections.push({ heading: "Your read on it", bullets: read });
   }
 
+  const followupHit = followups ? assessSafetyAll(["matters_offscreen", "benefit"].map((id) => answerText(followups, id))) : null;
+  const hit = [a.safety, followupHit].filter((h) => h && h.level !== "mention").sort((x, y) => (y!.level === "immediate" ? 1 : 0) - (x!.level === "immediate" ? 1 : 0))[0] ?? null;
+
   return {
     id: newId(),
     mode: "mirror",
     title: `AI Mirror — ${a.promptCount} prompts`,
     createdAt: Date.now(),
     sections,
+    safetyFlagged: !!hit,
     meta: {
+      ...(hit ? { safetyKind: hit.kind, safetyLevel: hit.level } : {}),
       top: a.categories.slice(0, 3).map((c) => c.label),
       traps: a.traps.map((t) => t.id),
       subjects: a.subjects.slice(0, 5).map((s) => s.term),

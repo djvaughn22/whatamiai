@@ -13,7 +13,7 @@ import QuestionFlow from "../components/QuestionFlow";
 import { Card, Eyebrow, GhostBtn, PrimaryBtn, Shell, TextLink, TopBar, usePalette } from "../components/ui";
 
 type Stage = "input" | "review" | "result" | "followup";
-type Draft = { stage: Stage; raw: string; prompts: string[]; excluded: number[] };
+type Draft = { stage: Stage; raw: string; prompts: string[]; excluded: number[]; followAnswers?: Answers };
 
 const DRAFT_KEY = "wai3-mirror-session";
 
@@ -38,14 +38,15 @@ export default function MirrorPage() {
       setRaw(d.raw);
       setPrompts(d.prompts);
       setExcluded(new Set(d.excluded));
+      if (d.followAnswers) setFollowAnswers(d.followAnswers);
       if (d.stage === "review") setStage("review");
     }
   }, []);
   useEffect(() => {
     if (!restored.current) return;
-    if (stage === "input" || stage === "review")
-      saveDraft<Draft>(DRAFT_KEY, { stage, raw, prompts, excluded: [...excluded] }, true);
-  }, [stage, raw, prompts, excluded]);
+    // follow-up answers persist for the session too, so a refresh mid-review never loses them
+    saveDraft<Draft>(DRAFT_KEY, { stage, raw, prompts, excluded: [...excluded], followAnswers }, true);
+  }, [stage, raw, prompts, excluded, followAnswers]);
 
   const included = prompts.filter((_, i) => !excluded.has(i));
 

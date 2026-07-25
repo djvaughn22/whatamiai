@@ -266,6 +266,7 @@ export function composeSituationResult(type: SituationType, a: Answers): Reflect
     sections,
     safetyFlagged: !!safety,
     meta: {
+      ...(safety ? { safetyKind: safety } : {}),
       type,
       guessing: t("asked") === "I'm guessing",
       want: "",

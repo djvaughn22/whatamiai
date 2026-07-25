@@ -167,6 +167,7 @@ export function composePatternsResult(a: Answers): Reflection {
     sections,
     safetyFlagged: !!safety,
     meta: {
+      ...(safety ? { safetyKind: safety } : {}),
       startFinish: sf,
       seek,
       matters,
