@@ -6,9 +6,10 @@
 import { useState } from "react";
 import type { Reflection } from "../lib/types";
 import { saveReflection } from "../lib/storage";
-import { copyText, downloadFile, safeFilename, toAIPrompt, toJSONExport, toMarkdown, toPlainText, toSnapshot } from "../lib/exporters";
+import { copyText, downloadFile, exportCategories, hasFinancialContent, hasWrittenContent, safeFilename, toAIPrompt, toJSONExport, toMarkdown, toPlainText, toSnapshot } from "../lib/exporters";
 import { downloadSnapshotImage } from "../lib/shareImage";
-import { SAFETY_COPY } from "../lib/safety";
+import { IMMEDIATE_LEAD, SAFETY_COPY, type SafetyKind } from "../lib/safety";
+import { ExperimentBlock, InterpretationBlock, ObservationBlock } from "./reflect";
 import { Card, Eyebrow, GhostBtn, PrimaryBtn, type Palette } from "./ui";
 
 export default function ResultView({
@@ -27,6 +28,9 @@ export default function ResultView({
   const r = reflection;
   const [saved, setSaved] = useState(false);
   const [flash, setFlash] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [includeWritten, setIncludeWritten] = useState(true);
+  const [includeFigures, setIncludeFigures] = useState(true);
 
   const note = (msg: string) => {
     setFlash(msg);
@@ -37,13 +41,22 @@ export default function ResultView({
     note((await copyText(text)) ? msg : "Couldn't copy — your browser blocked it.");
   };
 
+  const safetyKind: SafetyKind = typeof r.meta?.safetyKind === "string" && r.meta.safetyKind in SAFETY_COPY ? (r.meta.safetyKind as SafetyKind) : "self";
+  const safetyImmediate = r.meta?.safetyLevel === "immediate";
+  const aiOptions = { includeWritten, includeExactFigures: includeFigures };
+  const written = hasWrittenContent(r);
+  const financial = hasFinancialContent(r);
+
   return (
     <div>
       {r.safetyFlagged && (
         <Card pal={pal} accent style={{ marginBottom: 18 }}>
           <Eyebrow pal={pal}>Before the reflection</Eyebrow>
-          <p style={{ fontSize: 15, fontWeight: 800, color: pal.text, margin: "0 0 10px", lineHeight: 1.55 }}>{SAFETY_COPY.self.lead}</p>
-          {SAFETY_COPY.self.lines.map((l, i) => (
+          {safetyImmediate && (
+            <p style={{ fontSize: 15, fontWeight: 800, color: pal.text, margin: "0 0 10px", lineHeight: 1.55 }}>{IMMEDIATE_LEAD}</p>
+          )}
+          <p style={{ fontSize: 15, fontWeight: 800, color: pal.text, margin: "0 0 10px", lineHeight: 1.55 }}>{SAFETY_COPY[safetyKind].lead}</p>
+          {SAFETY_COPY[safetyKind].lines.map((l, i) => (
             <p key={i} style={{ fontSize: 14.5, color: pal.text, margin: "0 0 8px", lineHeight: 1.6 }}>{l}</p>
           ))}
           <p style={{ fontSize: 13.5, color: pal.sub, margin: "10px 0 0", lineHeight: 1.6 }}>
@@ -56,6 +69,13 @@ export default function ResultView({
         {r.sections.map((s) => (
           <Card key={s.heading} pal={pal} style={{ marginBottom: 14 }}>
             <Eyebrow pal={pal}>{s.heading}</Eyebrow>
+            {s.kind === "facts" && r.evidence?.length && !s.bullets?.length ? (
+              <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+                {r.evidence.map((e) => (
+                  <li key={e.id} style={{ fontSize: 15, color: pal.text, lineHeight: 1.6 }}>{e.statement}</li>
+                ))}
+              </ul>
+            ) : null}
             {(s.paragraphs ?? []).map((p, i) => (
               <p key={i} style={{ fontSize: 15.5, color: pal.text, lineHeight: 1.65, margin: i === 0 ? 0 : "10px 0 0" }}>{p}</p>
             ))}
@@ -65,6 +85,21 @@ export default function ResultView({
                   <li key={i} style={{ fontSize: 15, color: pal.text, lineHeight: 1.6 }}>{b}</li>
                 ))}
               </ul>
+            ) : null}
+            {s.observations?.length ? (
+              <div style={{ marginTop: s.paragraphs?.length || s.bullets?.length ? 12 : 0 }}>
+                <ObservationBlock pal={pal} r={r} observations={s.observations} />
+              </div>
+            ) : null}
+            {s.interpretations?.length ? (
+              <div style={{ marginTop: s.paragraphs?.length || s.bullets?.length ? 12 : 0 }}>
+                <InterpretationBlock pal={pal} r={r} interpretations={s.interpretations} />
+              </div>
+            ) : null}
+            {s.experiment ? (
+              <div style={{ marginTop: s.paragraphs?.length || s.bullets?.length ? 12 : 0 }}>
+                <ExperimentBlock pal={pal} experiment={s.experiment} />
+              </div>
             ) : null}
             {s.note ? <p style={{ fontSize: 13.5, color: pal.sub, lineHeight: 1.6, margin: "12px 0 0" }}>{s.note}</p> : null}
           </Card>
@@ -123,10 +158,42 @@ export default function ResultView({
 
         <Card pal={pal} style={{ marginTop: 20 }}>
           <Eyebrow pal={pal}>Optional: take it further with an AI</Eyebrow>
-          <p style={{ fontSize: 14.5, color: pal.sub, lineHeight: 1.65, margin: "0 0 14px" }}>
-            This copies your summary plus ground rules — no diagnosing, no labels, observations kept separate from facts, judgment calls stay with you. No AI has been certified wise; take what&apos;s useful.
+          <p style={{ fontSize: 14.5, color: pal.sub, lineHeight: 1.65, margin: "0 0 10px" }}>
+            This copies your reflection plus ground rules — no diagnosing, no labels, observations kept separate from facts, judgment calls stay with you. No AI has been certified wise; take what&apos;s useful.
           </p>
-          <GhostBtn pal={pal} onClick={() => doCopy(toAIPrompt(r), "Prompt copied — paste it into the AI you use.")}>Continue this reflection with an AI</GhostBtn>
+          <button
+            type="button"
+            aria-expanded={previewOpen}
+            onClick={() => setPreviewOpen(!previewOpen)}
+            style={{ background: "none", border: "none", color: pal.sub, fontSize: 13, fontWeight: 800, cursor: "pointer", padding: "0 0 10px", textDecoration: "underline" }}
+          >
+            {previewOpen ? "Hide what will be copied" : "See what will be copied"}
+          </button>
+          {previewOpen && (
+            <div style={{ marginBottom: 12 }}>
+              <ul style={{ margin: "0 0 10px", paddingLeft: 20 }}>
+                {exportCategories(r).map((c) => (
+                  <li key={c} style={{ fontSize: 13.5, color: pal.sub, lineHeight: 1.6 }}>{c}</li>
+                ))}
+              </ul>
+              {written && (
+                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5, color: pal.text, marginBottom: 6, cursor: "pointer" }}>
+                  <input type="checkbox" checked={includeWritten} onChange={(e) => setIncludeWritten(e.target.checked)} style={{ marginTop: 3 }} />
+                  Include the answers I typed in my own words
+                </label>
+              )}
+              {financial && (
+                <label style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 13.5, color: pal.text, marginBottom: 6, cursor: "pointer" }}>
+                  <input type="checkbox" checked={includeFigures} onChange={(e) => setIncludeFigures(e.target.checked)} style={{ marginTop: 3 }} />
+                  Include my exact dollar amounts (unchecked sends percentages only)
+                </label>
+              )}
+              <p style={{ fontSize: 12.5, color: pal.sub, lineHeight: 1.6, margin: "8px 0 0" }}>
+                Nothing is sent by this site — the prompt is only copied, and you choose where to paste it.
+              </p>
+            </div>
+          )}
+          <GhostBtn pal={pal} onClick={() => doCopy(toAIPrompt(r, aiOptions), "Prompt copied — paste it into the AI you use.")}>Continue this reflection with an AI</GhostBtn>
         </Card>
 
         <Card pal={pal} style={{ marginTop: 14, textAlign: "center" }}>
