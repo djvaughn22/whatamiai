@@ -5,8 +5,9 @@
 // those get real resources, always visible from this page.
 
 import { useEffect, useMemo, useState } from "react";
-import { leanFromTallies, reactAIPrompt, SCENARIOS, STYLE_INFO, type ReactionOption, type ReactionStyle, type Scenario, type StyleTallies } from "../lib/reactEngine";
-import { copyText } from "../lib/exporters";
+import { composeReactReflection, composeReactScenarioReflection, leanFromTallies, SCENARIOS, STYLE_INFO, type ReactionOption, type ReactionStyle, type Scenario, type StyleTallies } from "../lib/reactEngine";
+import { copyText, toAIPrompt } from "../lib/exporters";
+import { saveReflection } from "../lib/storage";
 import { Card, Eyebrow, GhostBtn, PageHead, PrimaryBtn, Shell, TopBar, usePalette, type Palette } from "../components/ui";
 
 const STORE_KEY = "wai-react-v1";
@@ -143,7 +144,7 @@ export default function ReactPage() {
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 20 }}>
           {remaining.length > 0 && <PrimaryBtn pal={pal} onClick={nextCard}>Next situation →</PrimaryBtn>}
-          <GhostBtn pal={pal} onClick={async () => note((await copyText(reactAIPrompt(s, picked))) ? "Prompt copied — paste it into the AI you use." : "Couldn't copy — your browser blocked it.")}>
+          <GhostBtn pal={pal} onClick={async () => note((await copyText(toAIPrompt(composeReactScenarioReflection(s, picked)))) ? "Prompt copied — paste it into the AI you use." : "Couldn't copy — your browser blocked it.")}>
             Talk this one out with an AI
           </GhostBtn>
           <GhostBtn pal={pal} small onClick={nextCard}>All cards</GhostBtn>
@@ -235,9 +236,32 @@ export default function ReactPage() {
       )}
 
       {loaded && doneCount > 0 && (
-        <p style={{ textAlign: "center", marginTop: 16 }}>
-          <GhostBtn pal={pal} small onClick={resetAll}>Reset the deck</GhostBtn>
-        </p>
+        <>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap", marginTop: 16 }}>
+            <GhostBtn
+              pal={pal}
+              small
+              onClick={() => {
+                saveReflection(composeReactReflection(progress.done, progress.tallies));
+                note("Saved — only in this browser. Find it under saved reflections.");
+              }}
+            >
+              Save this as a reflection
+            </GhostBtn>
+            <GhostBtn
+              pal={pal}
+              small
+              onClick={async () => note((await copyText(toAIPrompt(composeReactReflection(progress.done, progress.tallies)))) ? "Prompt copied — paste it into the AI you use." : "Couldn't copy — your browser blocked it.")}
+            >
+              Continue with an AI
+            </GhostBtn>
+            <GhostBtn pal={pal} small onClick={resetAll}>Reset the deck</GhostBtn>
+          </div>
+          {flash && <p role="status" style={{ fontSize: 13.5, color: pal.brand, fontWeight: 800, textAlign: "center", marginTop: 12 }}>{flash}</p>}
+          <p style={{ fontSize: 12.5, color: pal.sub, textAlign: "center", marginTop: 10, lineHeight: 1.6 }}>
+            Saving and copying are always your call — nothing happens automatically, and nothing leaves this device.
+          </p>
+        </>
       )}
 
       <SafetyFooter pal={pal} />

@@ -7,6 +7,9 @@
 // All deterministic, all local. No scenario involves abuse or danger;
 // those get real resources, not practice cards.
 
+import type { Evidence, Reflection } from "./types";
+import { newId, REFLECTION_SCHEMA_VERSION } from "./types";
+
 export type ReactionStyle = "fire" | "retreat" | "pleaser" | "steady";
 
 export type ReactionOption = {
@@ -248,7 +251,7 @@ export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; sh
     emoji: "🔥",
     name: "Fire",
     short: "You meet it head-on, fast and hot.",
-    read: "Your first move under provocation is forward — fast, direct, sometimes loud. The strength inside it is real: you don't hide, you don't stew, and people always know where you stand. The cost is that speed and heat make your point easier to dismiss, and the fight often outlives the issue.",
+    read: "In these cards, your first move under provocation was forward — fast, direct, sometimes loud. The strength inside that pick is real: nothing hides, nothing stews, and people know where you stand. The cost is that speed and heat make a point easier to dismiss, and the fight often outlives the issue.",
     growth: "You rarely need less courage — just more clock. Almost everything you'd say hot works better said calm, and you're one deep breath away from being genuinely formidable instead of just loud. Try one beat of silence before the first sentence.",
     counsel: "Ruling your own spirit is a bigger win than winning the exchange — the calm version of you is also the strongest one.",
   },
@@ -256,7 +259,7 @@ export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; sh
     emoji: "🧊",
     name: "Retreat",
     short: "You pull back, go quiet, and carry it internally.",
-    read: "Your first move is away — silence, distance, the long private replay. The strength inside it is real: you don't escalate, and you give yourself time to think. The cost is that the issue never gets a voice, so nothing changes, and the people involved often never learn there was a problem — while you keep paying for it alone.",
+    read: "In these cards, your first move was away — silence, distance, the long private replay. The strength inside that pick is real: nothing escalates, and there's time to think. The cost is that the issue never gets a voice, so nothing changes, and the people involved often never learn there was a problem — while you keep paying for it alone.",
     growth: "Your instinct to not make it worse is valuable — the missing piece is the return trip. Retreat to cool off, then come back and say the thing. One honest sentence delivered late still beats a hundred rehearsed in silence.",
     counsel: "Truth spoken in love is the whole assignment — and half of it is the speaking.",
   },
@@ -264,7 +267,7 @@ export const STYLE_INFO: Record<ReactionStyle, { emoji: string; name: string; sh
     emoji: "🤝",
     name: "Pleaser",
     short: "You smooth it over and absorb the cost yourself.",
-    read: "Your first move is toward harmony — agree, apologize, absorb, keep the peace. The strength inside it is real: rooms are genuinely better with a peacemaker in them. The cost is that the peace is often purchased with your own unspoken account, and people learn your yes is automatic — which quietly devalues it.",
+    read: "In these cards, your first move was toward harmony — agree, apologize, absorb, keep the peace. The strength inside that pick is real: rooms are genuinely better with a peacemaker in them. The cost is that the peace is often purchased with an unspoken account, and people learn the yes is automatic — which quietly devalues it.",
     growth: "You don't need to become harder — you need your kindness to include yourself. Practice the warm no: same friendly tone you already have, different answer. The people worth keeping will adjust within a week.",
     counsel: "A clear yes and an honest no are both acts of love — including toward yourself.",
   },
@@ -287,22 +290,110 @@ export function leanFromTallies(t: StyleTallies): { style: ReactionStyle; count:
   return { style: entries[0].style, count: entries[0].count, total };
 }
 
-// ---- open-ended AI continuation ----
+// ---- Reflection-compatible representations (shared save/export/AI) ----
 
-export function reactAIPrompt(s: Scenario, picked: ReactionOption): string {
-  return [
-    "I just worked through a reaction scenario on WhatAmIAI.com and I want to go deeper with you.",
-    "",
-    `The situation: ${s.setup}`,
-    `My honest first instinct was: "${picked.text}"`,
-    "",
-    "Ground rules for this conversation:",
-    "- Be positive and practical — no shame, no lecturing.",
-    "- Keep the counsel grace-first: merciful, hopeful, practical. No preaching at me.",
-    "- Ask me one question at a time about the real version of this in my life.",
-    "- Don't diagnose me or label me. Help me think, then help me pick one small next step.",
-    "- If anything I describe involves safety, abuse, or crisis, point me to real human help first.",
-    "",
-    "Start by asking me what real situation in my life this scenario reminded me of.",
-  ].join("\n");
+/** One scenario + honest pick, as a Reflection — feeds the shared AI exporter. */
+export function composeReactScenarioReflection(s: Scenario, picked: ReactionOption): Reflection {
+  const evidence: Evidence[] = [
+    { id: "ev-scenario", statement: `The situation: ${s.setup}` },
+    { id: "ev-pick", statement: `Your honest first instinct — you tapped: “${picked.text}”`, sourceAnswer: picked.text },
+  ];
+  return {
+    id: newId(),
+    mode: "react",
+    title: `How Do I React? — ${s.title.toLowerCase()}`,
+    createdAt: Date.now(),
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
+    evidence,
+    sections: [
+      { heading: "What you told it", kind: "facts" },
+      { heading: "The honest read — no shame in it", kind: "observations", observations: [{ id: "obs-pick", statement: picked.read, evidenceIds: ["ev-pick"], confidence: "plausible" }] },
+      { heading: "A steadier way", kind: "plan", paragraphs: [s.better, s.script] },
+      { heading: "Counsel", kind: "custom", paragraphs: [s.counsel] },
+      {
+        heading: "What might challenge this reading",
+        kind: "challenge",
+        bullets: ["This is a staged situation with four pre-written options — your real move may not have been on the menu.", "The read describes the option you tapped, not you."],
+      },
+      { heading: "Continue the reflection", kind: "questions", bullets: ["What real situation in my life does this scenario remind me of?", "What would my honest move cost or gain there?"] },
+    ],
+    meta: { scenario: s.id },
+  };
+}
+
+/** The whole deck so far — lean, observations, counsel — as a saveable Reflection. */
+export function composeReactReflection(done: string[], tallies: StyleTallies): Reflection {
+  const total = tallies.fire + tallies.retreat + tallies.pleaser + tallies.steady;
+  const lean = leanFromTallies(tallies);
+  const STYLE_NAME: Record<ReactionStyle, string> = { fire: "the head-on move", retreat: "the pull-back move", pleaser: "the smooth-it-over move", steady: "the steady move" };
+
+  const evidence: Evidence[] = [{ id: "ev-total", statement: `You've faced ${done.length} of ${SCENARIOS.length} situations and tapped your honest first move in each` }];
+  for (const style of ["fire", "retreat", "pleaser", "steady"] as ReactionStyle[]) {
+    if (tallies[style] > 0) evidence.push({ id: `ev-${style}`, statement: `${tallies[style]} of ${total} picks were ${STYLE_NAME[style]}` });
+  }
+
+  const sections: Reflection["sections"] = [
+    { heading: "What you told it", kind: "facts", note: "Only your taps — no hidden scoring." },
+  ];
+
+  if (lean) {
+    const info = STYLE_INFO[lean.style];
+    sections.push({
+      heading: `A lean your picks may show: ${info.name}`,
+      kind: "interpretations",
+      interpretations: [
+        {
+          id: "int-lean",
+          possibility: `${info.short.toLowerCase().replace(/\.$/, "")} — ${lean.count} of your ${lean.total} picks went that way. ${info.read}`,
+          evidenceIds: [`ev-${lean.style}`, "ev-total"],
+          confidence: "tentative",
+          alternative: "Card picks can reflect how you'd like to respond, or how you read imagined situations — full-temperature moments can differ.",
+          checkQuestion: "Would the people closest to you pick the same option for you?",
+        },
+      ],
+      note: "A lean is a habit, not an identity — it describes your taps here, and habits can be retrained.",
+    });
+    sections.push({ heading: "A steadier direction", kind: "custom", paragraphs: [info.growth, info.counsel] });
+  } else {
+    sections.push({
+      heading: "No single lean yet",
+      kind: "custom",
+      paragraphs: [total < 3 ? "Fewer than three picks is not enough information to name a lean — and saying so beats guessing." : "Your picks are split — no single lean stands out yet. That's information too: your first move may depend more on the situation than on a habit."],
+    });
+  }
+
+  sections.push({
+    heading: "What might challenge this reading",
+    kind: "challenge",
+    bullets: [
+      "These are staged situations with four pre-written options — your real moves may not be on the menu.",
+      `${total} imagined moments are a small sample of real life.`,
+      "The same reaction can serve different purposes in different settings — one word can't carry all of that.",
+    ],
+  });
+
+  sections.push({
+    heading: "Continue the reflection",
+    kind: "questions",
+    bullets: ["Which card felt closest to a situation you're actually in?", "Where does your real-life move differ from what you tapped here?", "Who could tell you honestly whether the lean fits?"],
+  });
+
+  sections.push({
+    heading: "Real help, if a card touched something real",
+    kind: "resources",
+    paragraphs: [
+      "These cards are everyday situations on purpose. If something in your real life involves abuse, threats, or danger, that's bigger than practice: call or text 988 (crisis, US), call 1-800-799-7233 (domestic violence hotline), or 911 if you're in immediate danger. Real people first, always.",
+    ],
+  });
+
+  return {
+    id: newId(),
+    mode: "react",
+    title: `How Do I React? — ${done.length} situation${done.length === 1 ? "" : "s"}`,
+    createdAt: Date.now(),
+    schemaVersion: REFLECTION_SCHEMA_VERSION,
+    evidence,
+    sections,
+    meta: { lean: lean?.style ?? "", faced: done.length },
+  };
 }
