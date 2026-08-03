@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           ]}
         />
         {children}
-        <OpenMirrorFooter siteName="WhatAmIAI.com" accent="#E879F9" />
+        <OpenMirrorFooter />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-09TFJRG35S"
           strategy="afterInteractive"
