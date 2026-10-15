@@ -277,6 +277,9 @@ const GOAL_VERSIONS: Record<string, { busy: string; minimum: string }> = {
   quiet: { busy: "The 90-second version: one verse, one breath, one sentence.", minimum: "Sit down in the chair. That's it." },
 };
 
+// Lowercase a quoted choice for mid-sentence use, but keep the pronoun "I".
+const softLower = (t: string) => (/^I\b/.test(t) ? t : t.charAt(0).toLowerCase() + t.slice(1));
+
 export type HabitInputs = { goalId: string; level: number; obstacle: string; when: string };
 
 export function composeHabitsResult(h: HabitInputs): Reflection {
@@ -289,8 +292,8 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
 
   const evidence: Evidence[] = [
     { id: "ev-goal", statement: `The habit — you selected: ${goal.label.toLowerCase()}`, sourceQuestionId: "goal", sourceAnswer: goal.label },
-    { id: "ev-level", statement: `Where you're starting from — you selected: “${levelText.toLowerCase()}”`, sourceQuestionId: "level", sourceAnswer: levelText },
-    { id: "ev-obstacle", statement: `What usually kills it — you selected: “${h.obstacle.toLowerCase()}”`, sourceQuestionId: "obstacle", sourceAnswer: h.obstacle },
+    { id: "ev-level", statement: `Where you're starting from — you selected: “${softLower(levelText)}”`, sourceQuestionId: "level", sourceAnswer: levelText },
+    { id: "ev-obstacle", statement: `What usually kills it — you selected: “${softLower(h.obstacle)}”`, sourceQuestionId: "obstacle", sourceAnswer: h.obstacle },
     { id: "ev-when", statement: `Your most reliable pocket of time — you selected: ${h.when.toLowerCase()}`, sourceQuestionId: "when", sourceAnswer: h.when },
   ];
 
@@ -316,7 +319,7 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
     experiment: {
       title: "Run the seven days above",
       action: `Run the plan at ${h.when.toLowerCase()}, at whatever size actually happens.`,
-      rationale: `You picked ${goal.label.toLowerCase()}, starting from “${levelText.toLowerCase()}”, with “${h.obstacle.toLowerCase()}” as the usual killer — the plan is sized to exactly that.`,
+      rationale: `You picked ${goal.label.toLowerCase()}, starting from “${softLower(levelText)}”, with “${softLower(h.obstacle)}” as the usual killer — the plan is sized to exactly that.`,
       duration: "7 days",
       observe: [
         "Which days happened, which didn't, and what was different about them",
@@ -349,7 +352,7 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
     kind: "challenge",
     bullets: [
       "One week can start a habit; it can't prove or disprove one.",
-      `You named “${h.obstacle.toLowerCase()}” — if a day gets missed, check whether that was actually the cause before rewriting the plan.`,
+      `You named “${softLower(h.obstacle)}” — if a day gets missed, check whether that was actually the cause before rewriting the plan.`,
       "Three taps size a plan roughly. If the week feels wrong by day three, the sizing missed — not you.",
     ],
   });
@@ -394,13 +397,18 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
 export type Streak = { goalId: string; days: string[]; best: number };
 const STREAK_KEY = "wai-habit-streak-v1";
 
-const dayStr = (d: Date) => d.toISOString().slice(0, 10);
+// Local calendar day, not UTC: an evening tap must land on today, not tomorrow.
+const dayStr = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 export function loadStreak(): Streak | null {
   if (typeof window === "undefined") return null;
   try {
     const s = JSON.parse(localStorage.getItem(STREAK_KEY) ?? "");
-    if (s && typeof s.goalId === "string" && Array.isArray(s.days)) return s as Streak;
+    if (s && typeof s.goalId === "string" && Array.isArray(s.days)) {
+      const days = s.days.filter((d: unknown): d is string => typeof d === "string");
+      const best = typeof s.best === "number" && Number.isFinite(s.best) && s.best > 0 ? Math.floor(s.best) : 0;
+      return { goalId: s.goalId, days, best };
+    }
   } catch {}
   return null;
 }
