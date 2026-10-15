@@ -1,7 +1,10 @@
 "use client";
-// Money Check — three numbers, three taps, real math. Everything stays
-// on this device; financial numbers are never sent, stored remotely, or
-// put in a URL.
+// Money Check — three numbers, three taps, real math. The math runs in the
+// browser; the numbers are never sent, stored remotely, or put in a URL.
+// Entries autosave to localStorage (DRAFT_KEY) until cleared; the result is
+// stored only if the user taps Save. The site-wide layout loads Google
+// Analytics for page visits — it never receives these numbers. If either
+// of those facts changes, update the card copy below.
 
 import { useEffect, useRef, useState } from "react";
 import { composeMoneyResult, MONEY_STRESS, MONEY_SURPRISE, MONEY_TRACK, type MoneyInputs } from "../lib/moneyEngine";
@@ -148,7 +151,7 @@ export default function MoneyPage() {
 
       <Card pal={pal} accent style={{ marginBottom: 20 }}>
         <p style={{ fontSize: 13.5, color: pal.text, lineHeight: 1.65, margin: 0 }}>
-          🔒 <strong>These numbers never leave this device.</strong> No account, no server, no analytics on them — the math runs in your browser and disappears unless you save the result yourself.
+          🔒 <strong>Your numbers stay in this browser.</strong> The math runs on your device, and your numbers are never sent anywhere or put in a link. Your entries are kept here as you type so a refresh won&apos;t lose them, and you can clear them any time. The result is only kept if you choose Save. Like every page here, this one is counted as a visit in Google Analytics; your numbers aren&apos;t part of that.
         </p>
       </Card>
 
