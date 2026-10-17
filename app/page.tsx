@@ -14,7 +14,7 @@ const MODES = [
     emoji: "🧭",
     name: "My Situation",
     time: "About 8 taps · under a minute",
-    text: "One decision, conflict, or stuck place. Eight taps and it gets named — the shape it has, the blind spot to check, and one step for the next seven days.",
+    text: "Pick one decision, conflict, or place you feel stuck and answer eight quick taps. You get a name for it, one thing to double-check, and one step for the week.",
     button: "Name my situation",
   },
   {
@@ -22,7 +22,7 @@ const MODES = [
     emoji: "💵",
     name: "Money Check",
     time: "3 numbers + 3 taps · 60 seconds",
-    text: "Most people have never seen their own margin written down. Three numbers, three taps — your real math, your money pattern, and one move. Nothing leaves your device.",
+    text: "Enter your monthly take-home pay, must-pay bills, and debt payments, then tap three answers. You see what's left each month, your money pattern, and one next step. Nothing leaves your device.",
     button: "Show me my math",
   },
   {
@@ -30,7 +30,7 @@ const MODES = [
     emoji: "⚡",
     name: "How Do I React?",
     time: "Real situations · tap your honest move",
-    text: "Cut off in traffic. Credit stolen at work. The group chat on fire. Tap what you'd really do, get a no-shame read, a steadier script, and solid counsel — and slowly discover your reaction lean.",
+    text: "Everyday moments like getting cut off in traffic or a group chat blowing up. Tap what you'd really do, then see what it costs, a calmer thing to say, and plain advice. Over time it shows how you tend to react.",
     button: "Deal me a situation",
   },
   {
@@ -38,7 +38,7 @@ const MODES = [
     emoji: "🏃",
     name: "7-Day Habit Starter",
     time: "3 taps · plan + streak",
-    text: "Exercise, eating, sleep, less phone, water, quiet time. Three taps build a week sized to where you actually are — with a streak to keep and a best record to beat.",
+    text: "Pick exercise, eating, sleep, less phone, water, or quiet time. Three taps make a one-week plan that fits where you are, with a streak to keep.",
     button: "Build my week",
   },
   {
@@ -46,7 +46,7 @@ const MODES = [
     emoji: "📵",
     name: "Intentional Phone Use",
     time: "One pick · 7 small days",
-    text: "You want to spend less time on your phone. Pick the one use you want less of, then seven small days: observe, remove one interruption, add one pause, protect one moment. Not a detox — the point is noticing what you choose.",
+    text: "Pick the one thing you'd like to use your phone less for. Then seven small days: notice it, remove one interruption, add one pause, and protect one moment.",
     button: "Start the 7 days",
   },
   {
@@ -54,7 +54,7 @@ const MODES = [
     emoji: "🪞",
     name: "My AI Mirror",
     time: "Paste prompts · instant read",
-    text: "Paste prompts you've asked your usual AI and see what they say about how you really use it — the roles you hand it, the habits, and the patterns worth watching.",
+    text: "Paste a few things you've asked an AI chat tool. See what they show about how you use it: the jobs you give it, your habits, and patterns to watch.",
     button: "Analyze my prompts",
   },
   {
@@ -62,7 +62,7 @@ const MODES = [
     emoji: "🔁",
     name: "My Overall Patterns",
     time: "15 questions · almost all taps",
-    text: "The wider look: how you start, finish, decide, handle pressure and conflict — and whether what you say matters most actually gets your best time.",
+    text: "Fifteen questions, mostly taps, about how you start and finish things, decide, and handle pressure and conflict, and whether your time goes to what you say matters most.",
     button: "Explore my patterns",
   },
 ];
@@ -86,10 +86,10 @@ export default function Home() {
           Don&apos;t put me in a box. Just help me think.
         </p>
         <p style={{ fontSize: 17, fontWeight: 700, color: pal.text, lineHeight: 1.5, maxWidth: 480, margin: "0 auto 10px" }}>
-          Use AI as a mirror. See what your prompts, choices, and habits reveal.
+          Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone.
         </p>
         <p style={{ fontSize: 17, color: pal.sub, lineHeight: 1.7, maxWidth: 480, margin: "0 auto" }}>
-          Fast, honest tools for real life — reactions, situations, money, habits. Almost everything is a tap, every result ends with a named pattern, a blind spot, and one step. It all runs on your device.
+          Most take a minute or two. Each one ends with what it noticed and one small next step. Your answers stay on this device.
         </p>
       </div>
 
@@ -121,7 +121,7 @@ export default function Home() {
 
       <Card pal={pal} style={{ marginTop: 28, textAlign: "center" }}>
         <p style={{ fontSize: 14, color: pal.sub, lineHeight: 1.7, margin: 0 }}>
-          Not a personality test, not a diagnosis, not a label — these tools name situations and habits, never people. Everything stays on this device unless you copy or share it yourself. It can&apos;t replace a counselor, a pastor, or someone who knows you well; if you&apos;re under 18, use it with a parent or trusted adult.
+          Not a personality test, not a diagnosis, not a label — these tools name situations and habits, never people. Your answers stay on this device unless you copy or share them yourself. It can&apos;t replace a counselor, a pastor, or someone who knows you well; if you&apos;re under 18, use it with a parent or trusted adult.
         </p>
       </Card>
     </Shell>

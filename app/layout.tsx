@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | WhatAmIAI",
   },
   description:
-    "Fast, honest tools for real life — how you react, one situation named, your money math, a 7-day habit starter, your AI mirror. Tap-first, on your device, no labels, no accounts.",
+    "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Your answers stay on your device.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

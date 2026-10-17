@@ -146,7 +146,7 @@ export default function MoneyPage() {
       <PageHead
         pal={pal}
         title="Three numbers. Three taps. The real math."
-        sub="Most people have never seen their own margin written down. Sixty seconds fixes that."
+        sub="See what's left each month after bills and debt payments. It takes about a minute."
       />
 
       <Card pal={pal} accent style={{ marginBottom: 20 }}>

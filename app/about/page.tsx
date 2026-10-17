@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About WhatAmIAI",
   description:
-    "Fast, honest tools for real life — see your patterns, think through one situation, size one habit. On your device, no labels, no accounts.",
+    "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Your answers stay on your device.",
 };
 
 const A = "#E879F9";
@@ -16,9 +16,9 @@ export default function AboutPage() {
           About WhatAmIAI<span style={{ color: A }}>.com</span>
         </h1>
         <p style={{ fontSize: 15, lineHeight: 1.65, color: "#94a3b8", margin: "0 0 28px" }}>
-          WhatAmIAI is a set of fast, honest tools for looking at yourself — the questions you
-          ask, how you react, what you avoid, what a decision really costs. No labels; you&rsquo;re
-          not a category.
+          WhatAmIAI is a set of short tools for thinking about how you decide, react, spend,
+          and use your time, your phone, and AI chat tools. They describe situations and habits,
+          never people.
         </p>
 
         <h2 style={{ fontSize: 17, fontWeight: 900, margin: "0 0 8px" }}>What you can do here</h2>

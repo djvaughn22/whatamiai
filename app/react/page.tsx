@@ -202,7 +202,7 @@ export default function ReactPage() {
       <PageHead
         pal={pal}
         title="How do you actually react?"
-        sub="Real situations, four honest moves each. Tap the one you'd really make — get a no-shame read, a steadier script, and solid counsel. Your picks slowly reveal your reaction lean."
+        sub="Everyday situations, four choices each. Tap the one you'd really make, then see what it costs, a calmer thing to say, and plain advice. Over time your picks show how you tend to react."
       />
 
       {loaded && doneCount > 0 && (
