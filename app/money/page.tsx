@@ -6,7 +6,7 @@
 // Analytics for page visits — it never receives these numbers. If either
 // of those facts changes, update the card copy below.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { composeMoneyResult, MONEY_STRESS, MONEY_SURPRISE, MONEY_TRACK, type MoneyInputs } from "../lib/moneyEngine";
 import type { Reflection } from "../lib/types";
 import { clearDraft, loadDraft, saveDraft } from "../lib/storage";
@@ -17,10 +17,11 @@ const DRAFT_KEY = "wai-money-draft-v1";
 type MoneyDraft = { income: string; essentials: string; debt: string; stress: string; track: string; surprise: string };
 
 function NumField({ pal, label, hint, value, onChange }: { pal: Palette; label: string; hint: string; value: string; onChange: (v: string) => void }) {
+  const id = useId();
   return (
     <div style={{ marginBottom: 16 }}>
-      <label style={{ display: "block", fontSize: 15, fontWeight: 800, color: pal.text, marginBottom: 4 }}>{label}</label>
-      <p style={{ fontSize: 13, color: pal.sub, margin: "0 0 8px", lineHeight: 1.5 }}>{hint}</p>
+      <label htmlFor={id} style={{ display: "block", fontSize: 15, fontWeight: 800, color: pal.text, marginBottom: 4 }}>{label}</label>
+      <p id={`${id}-hint`} style={{ fontSize: 13, color: pal.sub, margin: "0 0 8px", lineHeight: 1.5 }}>{hint}</p>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ fontSize: 18, fontWeight: 900, color: pal.sub }}>$</span>
         <input
@@ -30,7 +31,9 @@ function NumField({ pal, label, hint, value, onChange }: { pal: Palette; label: 
           value={value}
           onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, ""))}
           placeholder="0"
-          aria-label={label}
+          id={id}
+          aria-describedby={`${id}-hint`}
+          maxLength={9}
           style={{ width: "100%", boxSizing: "border-box", background: pal.input, border: `2px solid ${value ? pal.brand : pal.border}`, borderRadius: 14, padding: "13px 16px", fontSize: 18, fontWeight: 800, color: pal.text, fontFamily: "inherit" }}
         />
       </div>
@@ -94,6 +97,11 @@ export default function MoneyPage() {
   }, [income, essentials, debt, stress, track, surprise, result]);
 
   const ready = income !== "" && essentials !== "" && stress && track && surprise;
+  const missing = [
+    income === "" && "take-home",
+    essentials === "" && "essentials",
+    !(stress && track && surprise) && "the three taps",
+  ].filter(Boolean) as string[];
   const anyInput = income || essentials || debt || stress || track || surprise;
 
   const clearAll = () => {
@@ -151,7 +159,7 @@ export default function MoneyPage() {
 
       <Card pal={pal} accent style={{ marginBottom: 20 }}>
         <p style={{ fontSize: 13.5, color: pal.text, lineHeight: 1.65, margin: 0 }}>
-          🔒 <strong>Your numbers stay in this browser.</strong> The math runs on your device, and your numbers are never sent anywhere or put in a link. Your entries are kept here as you type so a refresh won&apos;t lose them, and you can clear them any time. The result is only kept if you choose Save. Like every page here, this one is counted as a visit in Google Analytics; your numbers aren&apos;t part of that.
+          🔒 <strong>Your numbers stay in this browser.</strong> The math runs on your device. What you type autosaves here so a refresh won&apos;t lose it, until you clear it below. The result is kept only if you tap Save. Google Analytics counts visits to this page; your numbers are never sent to it or put in a link.
         </p>
       </Card>
 
@@ -170,7 +178,7 @@ export default function MoneyPage() {
       </Card>
 
       <PrimaryBtn pal={pal} full disabled={!ready} onClick={run}>
-        {ready ? "Show me the math →" : "Fill the numbers and taps above"}
+        {ready ? "Show me the math →" : `Still needed: ${missing.join(", ")}`}
       </PrimaryBtn>
       {anyInput ? (
         <p style={{ textAlign: "center", marginTop: 12 }}>

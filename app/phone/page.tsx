@@ -2,6 +2,7 @@
 // More Intentional Phone Use — pick one type of phone use to reduce, get
 // the 7-day starter, mark days done as you go. Progress stays local.
 
+import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useEffect, useState } from "react";
 import {
   clearPhonePlan,
@@ -45,7 +46,7 @@ function DayCard({ pal, day, index, done, current, onToggle, children }: { pal: 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10, marginBottom: 8 }}>
         <h2 style={{ fontSize: 17, fontWeight: 900, color: pal.text, margin: 0 }}>{day.title}</h2>
         {current && !done && (
-          <span style={{ fontSize: 11.5, fontWeight: 800, color: pal.brand, textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap" }}>Today</span>
+          <span style={{ fontSize: 11.5, fontWeight: 800, color: pal.accentText, textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap" }}>Today</span>
         )}
       </div>
       {day.paragraphs.map((p) => (
@@ -145,7 +146,7 @@ export default function PhonePage() {
           <p style={{ fontSize: 19, fontWeight: 900, color: pal.text, margin: "0 0 4px", lineHeight: 1.3 }}>
             You want to spend less time on your phone.
           </p>
-          <p style={{ fontSize: 14.5, fontWeight: 700, color: pal.brand, margin: "0 0 10px" }}>
+          <p style={{ fontSize: 14.5, fontWeight: 700, color: pal.accentText, margin: "0 0 10px" }}>
             This week: less {plan.focus.toLowerCase()}
           </p>
           <p style={{ fontSize: 14, color: pal.sub, lineHeight: 1.65, margin: 0 }}>
@@ -196,7 +197,7 @@ export default function PhonePage() {
             <p key={p} style={{ fontSize: 14.5, color: pal.text, lineHeight: 1.65, margin: "0 0 10px" }}>{p}</p>
           ))}
           <p style={{ fontSize: 14.5, color: pal.sub, lineHeight: 1.65, margin: "0 0 6px" }}>{PHONE_NEXT_QUESTION.lead}</p>
-          <p style={{ fontSize: 15.5, fontWeight: 800, color: pal.brand, lineHeight: 1.5, margin: 0 }}>{PHONE_NEXT_QUESTION.question}</p>
+          <p style={{ fontSize: 15.5, fontWeight: 800, color: pal.accentText, lineHeight: 1.5, margin: 0 }}>{PHONE_NEXT_QUESTION.question}</p>
         </Card>
 
         <Card pal={pal} style={{ marginBottom: 20 }}>
@@ -237,16 +238,16 @@ export default function PhonePage() {
             <GhostBtn pal={pal} small onClick={async () => note((await copyText(toAIPrompt(reflection()))) ? "Prompt copied — paste it into the AI you use." : "Couldn't copy — your browser blocked it.")}>Continue this reflection with an AI</GhostBtn>
           </div>
           <p style={{ fontSize: 12, color: pal.sub, lineHeight: 1.6, margin: "12px 0 0" }}>
-            Nothing here happens automatically — saving, copying, and exporting are always deliberate, and nothing is sent anywhere by this site.
+            Nothing is saved, copied, or exported unless you tap it.
           </p>
         </Card>
 
         {flash && (
-          <p role="status" style={{ fontSize: 13.5, color: pal.brand, fontWeight: 800, textAlign: "center", margin: "0 0 14px" }}>{flash}</p>
+          <p role="status" style={{ fontSize: 13.5, color: pal.accentText, fontWeight: 800, textAlign: "center", margin: "0 0 14px" }}>{flash}</p>
         )}
 
         <p style={{ fontSize: 12.5, color: pal.sub, textAlign: "center", margin: "0 0 14px", lineHeight: 1.6 }}>
-          Your plan and progress stay in this browser — no account, nothing sent anywhere.
+          {STORAGE_NOTE} {ANALYTICS_NOTE}
         </p>
         <p style={{ textAlign: "center", display: "flex", gap: 10, justifyContent: "center" }}>
           <GhostBtn pal={pal} small onClick={restart}>Choose a different focus</GhostBtn>
@@ -296,7 +297,7 @@ export default function PhonePage() {
       </PrimaryBtn>
 
       <p style={{ fontSize: 12.5, color: pal.sub, textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
-        Your plan and progress stay in this browser — no account, nothing sent anywhere.
+        {STORAGE_NOTE} {ANALYTICS_NOTE}
       </p>
       <p style={{ textAlign: "center", marginTop: 14 }}>
         <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All modes</GhostBtn>

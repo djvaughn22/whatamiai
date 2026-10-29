@@ -134,7 +134,7 @@ export default function ReactPage() {
           <p style={{ fontSize: 15.5, color: pal.text, lineHeight: 1.65, margin: "0 0 10px" }}>{s.counsel}</p>
           <p style={{ fontSize: 13, color: pal.sub, lineHeight: 1.6, margin: 0 }}>
             Counsel like this has a deep source.{" "}
-            <a href="https://crossheartpray.com" target="_blank" rel="noopener noreferrer" style={{ color: pal.brand, fontWeight: 800, textDecoration: "none" }}>
+            <a href="https://crossheartpray.com" target="_blank" rel="noopener noreferrer" style={{ color: pal.accentText, fontWeight: 800, textDecoration: "none" }}>
               CrossHeartPray →
             </a>
           </p>
@@ -149,7 +149,7 @@ export default function ReactPage() {
           </GhostBtn>
           <GhostBtn pal={pal} small onClick={nextCard}>All cards</GhostBtn>
         </div>
-        {flash && <p style={{ fontSize: 13.5, color: pal.brand, fontWeight: 800, marginTop: 12 }}>{flash}</p>}
+        {flash && <p style={{ fontSize: 13.5, color: pal.accentText, fontWeight: 800, marginTop: 12 }}>{flash}</p>}
         <p style={{ fontSize: 12.5, color: pal.sub, marginTop: 14, lineHeight: 1.6 }}>
           The AI prompt includes ground rules: positive, practical, grace-first, no labels, real help first if anything is unsafe.
         </p>
@@ -206,7 +206,7 @@ export default function ReactPage() {
       />
 
       {loaded && doneCount > 0 && (
-        <p style={{ fontSize: 14, fontWeight: 800, color: pal.brand, textAlign: "center", margin: "0 0 16px" }}>
+        <p style={{ fontSize: 14, fontWeight: 800, color: pal.accentText, textAlign: "center", margin: "0 0 16px" }}>
           {doneCount} of {SCENARIOS.length} situations faced
         </p>
       )}
@@ -257,7 +257,7 @@ export default function ReactPage() {
             </GhostBtn>
             <GhostBtn pal={pal} small onClick={resetAll}>Reset the deck</GhostBtn>
           </div>
-          {flash && <p role="status" style={{ fontSize: 13.5, color: pal.brand, fontWeight: 800, textAlign: "center", marginTop: 12 }}>{flash}</p>}
+          {flash && <p role="status" style={{ fontSize: 13.5, color: pal.accentText, fontWeight: 800, textAlign: "center", marginTop: 12 }}>{flash}</p>}
           <p style={{ fontSize: 12.5, color: pal.sub, textAlign: "center", marginTop: 10, lineHeight: 1.6 }}>
             Saving and copying are always your call — nothing happens automatically, and nothing leaves this device.
           </p>

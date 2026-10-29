@@ -5,7 +5,9 @@
 import { useEffect, useState } from "react";
 
 export const BRAND = "#E879F9";
-export const INK = "#0b1220";
+// rgb(), not hex: the family stylesheet repaints any inline style containing
+// "#0b1220" with the page background, which blanked every primary button.
+export const INK = "rgb(11, 18, 32)";
 
 export type Palette = {
   dark: boolean;
@@ -16,6 +18,8 @@ export type Palette = {
   border: string;
   input: string;
   brand: string;
+  /** brand colour for text on bg/card — darker in light mode so it passes 4.5:1 */
+  accentText: string;
   ink: string;
 };
 
@@ -28,8 +32,8 @@ export function usePalette(): Palette {
     return () => window.removeEventListener("om-theme", follow);
   }, []);
   return dark
-    ? { dark, bg: "#0b1220", text: "#e8edf5", sub: "#94a3b8", card: "#141d2e", border: "#26324c", input: "#0c1220", brand: BRAND, ink: INK }
-    : { dark, bg: "#FEFCF9", text: "#1C1917", sub: "#57534E", card: "#FFFFFF", border: "#E7E5E4", input: "#F9F9F7", brand: BRAND, ink: INK };
+    ? { dark, bg: "#0b1220", text: "#e8edf5", sub: "#94a3b8", card: "#141d2e", border: "#26324c", input: "#0c1220", brand: BRAND, accentText: BRAND, ink: INK }
+    : { dark, bg: "#FEFCF9", text: "#1C1917", sub: "#57534E", card: "#FFFFFF", border: "#E7E5E4", input: "#F9F9F7", brand: BRAND, accentText: "#A21CAF", ink: INK };
 }
 
 export function Shell({ pal, children, narrow = false }: { pal: Palette; children: React.ReactNode; narrow?: boolean }) {
@@ -108,7 +112,7 @@ export function TextLink({ pal, children, onClick }: { pal: Palette; children: R
 
 export function Eyebrow({ pal, children }: { pal: Palette; children: React.ReactNode }) {
   return (
-    <p style={{ fontSize: 12, fontWeight: 800, color: pal.brand, textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>
+    <p style={{ fontSize: 12, fontWeight: 800, color: pal.accentText, textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 10px" }}>
       {children}
     </p>
   );
@@ -127,7 +131,7 @@ export function TopBar({ pal, label, right }: { pal: Palette; label: string; rig
   return (
     <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26, gap: 10 }}>
       <a href="/" style={{ color: pal.sub, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>← WhatAmIAI</a>
-      <span style={{ fontSize: 12.5, fontWeight: 800, color: pal.brand, textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</span>
+      <span style={{ fontSize: 12.5, fontWeight: 800, color: pal.accentText, textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</span>
       <span>{right}</span>
     </div>
   );

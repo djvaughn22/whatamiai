@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | WhatAmIAI",
   },
   description:
-    "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Your answers stay on your device.",
+    "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Each ends with one small next step you can save or print.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,12 +22,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           site="WhatAmIAI.com"
           accent="#E879F9"
           links={[
+            { emoji: "🧭", name: "My Situation", href: "/situation" },
+            { emoji: "⚡", name: "How Do I React?", href: "/react" },
+            { emoji: "🔁", name: "My Overall Patterns", href: "/patterns" },
             { emoji: "🪞", name: "My AI Mirror", href: "/mirror" },
-            { emoji: "🧭", name: "One Situation", href: "/situation" },
-            { emoji: "🔁", name: "My Patterns", href: "/patterns" },
-            { emoji: "⚡", name: "How I React", href: "/react" },
             { emoji: "💵", name: "Money Check", href: "/money" },
-            { emoji: "📅", name: "One Habit", href: "/habits" },
+            { emoji: "🏃", name: "7-Day Habit Starter", href: "/habits" },
+            { emoji: "📵", name: "Intentional Phone Use", href: "/phone" },
             { emoji: "💾", name: "Saved Reflections", href: "/saved" },
             { emoji: "ℹ️", name: "About WhatAmIAI", href: "/about" },
           ]}

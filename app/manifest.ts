@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "WhatAmIAI",
     short_name: "WhatAmIAI",
     description:
-      "See the patterns in the questions you ask, think through one real situation, or look at how you approach tools and decisions. No labels — you're not a category.",
+      "Short tap-to-answer tools for a decision, your money, how you react, a habit, or your phone. Each ends with one small next step.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

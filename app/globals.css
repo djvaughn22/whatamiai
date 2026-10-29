@@ -170,3 +170,12 @@ select:focus-visible {
     color: #111111 !important;
   }
 }
+
+/* WhatAmIAI: home tool rows */
+.wai-row { transition: border-color 0.15s; }
+.wai-row:hover { border-color: #e879f9 !important; }
+:root[data-om-theme="light"] button:focus-visible,
+:root[data-om-theme="light"] a:focus-visible,
+:root[data-om-theme="light"] textarea:focus-visible,
+:root[data-om-theme="light"] input:focus-visible,
+:root[data-om-theme="light"] select:focus-visible { outline-color: #a21caf; }

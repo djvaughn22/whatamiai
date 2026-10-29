@@ -46,7 +46,7 @@ function DestinationLink({
   primary: boolean;
 }) {
   const style: CSSProperties = primary
-    ? { ...actionBase, background: ACCENT, color: "#0b1220", textDecoration: "none" }
+    ? { ...actionBase, background: ACCENT, color: "rgb(11, 18, 32)", textDecoration: "none" }
     : {
         ...actionBase,
         padding: "10px 4px",

@@ -2,6 +2,7 @@
 // Saved reflections — list, view, rename, delete, clear all, and the
 // combined view across modes. Everything lives in this browser only.
 
+import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useEffect, useState } from "react";
 import type { Reflection } from "../lib/types";
 import { MODE_LABEL } from "../lib/types";
@@ -48,7 +49,7 @@ export default function SavedPage() {
   return (
     <Shell pal={pal} narrow>
       <TopBar pal={pal} label="Saved reflections" />
-      <PageHead pal={pal} title="My saved reflections" sub="Stored only in this browser — no account, no cloud, no sync. Clearing browser data clears these too." />
+      <PageHead pal={pal} title="My saved reflections" sub={STORAGE_NOTE} />
 
       {items.length === 0 && (
         <Card pal={pal} style={{ textAlign: "center" }}>
@@ -85,7 +86,7 @@ export default function SavedPage() {
               <>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline", flexWrap: "wrap" }}>
                   <h2 style={{ fontSize: 17, fontWeight: 900, color: pal.text, margin: 0 }}>{r.title}</h2>
-                  <span style={{ fontSize: 12, fontWeight: 800, color: pal.brand, textTransform: "uppercase", letterSpacing: "0.1em" }}>{MODE_LABEL[r.mode]}</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: pal.accentText, textTransform: "uppercase", letterSpacing: "0.1em" }}>{MODE_LABEL[r.mode]}</span>
                 </div>
                 <p style={{ fontSize: 13, color: pal.sub, margin: "6px 0 14px" }}>
                   {new Date(r.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}

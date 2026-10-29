@@ -3,6 +3,7 @@
 // plus your obstacle's blind spot. A local streak tracker (current + best)
 // lives at the top once a plan exists. Everything stays on this device.
 
+import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useEffect, useState } from "react";
 import { composeHabitsResult, currentStreak, HABIT_GOALS, HABIT_OBSTACLES, HABIT_WHEN, loadStreak, markToday, todayMarked, type Streak } from "../lib/habitsEngine";
 import type { Reflection } from "../lib/types";
@@ -173,7 +174,7 @@ export default function HabitsPage() {
 
       {streak === null && (
         <p style={{ fontSize: 12.5, color: pal.sub, textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
-          Plans and streaks stay in this browser — no account, nothing sent anywhere.
+          {STORAGE_NOTE} {ANALYTICS_NOTE}
         </p>
       )}
       <p style={{ textAlign: "center", marginTop: 14 }}>

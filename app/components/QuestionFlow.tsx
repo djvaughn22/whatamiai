@@ -3,6 +3,7 @@
 // (with confirmation), preserved answers, chips/choice/text inputs, and a
 // calm inline safety notice when a typed answer needs one.
 
+import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Answers, Question } from "../lib/types";
 import { checkSafety, SAFETY_COPY, type SafetyKind } from "../lib/safety";
@@ -184,7 +185,7 @@ export default function QuestionFlow({
       </div>
 
       <p style={{ fontSize: 12.5, color: pal.sub, marginTop: 18, lineHeight: 1.6 }}>
-        Answers save on this device as you go, so a refresh won&apos;t lose your place. Nothing is sent anywhere.
+        Answers save in this browser as you go, so a refresh won&apos;t lose your place. {ANALYTICS_NOTE}
       </p>
     </div>
   );

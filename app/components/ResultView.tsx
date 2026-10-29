@@ -3,10 +3,11 @@
 // print, export Markdown/JSON, private snapshot, and the optional
 // continue-with-an-AI prompt. Readable on a phone, clean when printed.
 
+import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useState } from "react";
 import type { Reflection } from "../lib/types";
 import { saveReflection } from "../lib/storage";
-import { copyText, downloadFile, exportCategories, hasFinancialContent, hasWrittenContent, safeFilename, toAIPrompt, toJSONExport, toMarkdown, toPlainText, toSnapshot } from "../lib/exporters";
+import { copyText, downloadFile, exportCategories, hasFinancialContent, hasWrittenContent, safeFilename, toAIPrompt, toJSONExport, toMarkdown, toPlainText } from "../lib/exporters";
 import { downloadSnapshotImage } from "../lib/shareImage";
 import { IMMEDIATE_LEAD, SAFETY_COPY, type SafetyKind } from "../lib/safety";
 import { ExperimentBlock, InterpretationBlock, ObservationBlock } from "./reflect";
@@ -45,6 +46,11 @@ export default function ResultView({
   const safetyImmediate = r.meta?.safetyLevel === "immediate";
   const aiOptions = { includeWritten, includeExactFigures: includeFigures };
   const written = hasWrittenContent(r);
+  // the one thing to take away: the typed experiment, else a plan section
+  const stepSection = r.sections.find((s) => s.experiment) ?? r.sections.find((s) => s.kind === "plan" || s.kind === "experiment");
+  const stepText = stepSection?.experiment
+    ? stepSection.experiment.action
+    : stepSection?.paragraphs?.[0] ?? stepSection?.bullets?.[0];
   const financial = hasFinancialContent(r);
 
   return (
@@ -61,6 +67,16 @@ export default function ResultView({
           ))}
           <p style={{ fontSize: 13.5, color: pal.sub, margin: "10px 0 0", lineHeight: 1.6 }}>
             The reflection below is kept, but it is not the response your answers most need. A real person is.
+          </p>
+        </Card>
+      )}
+
+      {stepText && (
+        <Card pal={pal} accent style={{ marginBottom: 18 }}>
+          <Eyebrow pal={pal}>Your next step</Eyebrow>
+          <p style={{ fontSize: 16.5, fontWeight: 800, color: pal.text, lineHeight: 1.5, margin: 0 }}>{stepText}</p>
+          <p className="no-print" style={{ fontSize: 13.5, color: pal.sub, margin: "10px 0 0" }}>
+            <a href="#wai-actions" style={{ color: pal.accentText, fontWeight: 800 }}>Save, print, or download ↓</a>
           </p>
         </Card>
       )}
@@ -107,7 +123,7 @@ export default function ResultView({
       </div>
 
       {/* actions */}
-      <div className="no-print">
+      <div className="no-print" id="wai-actions" style={{ scrollMarginTop: 80 }}>
         {flash && (
           <div
             role="status"
@@ -136,9 +152,13 @@ export default function ResultView({
             <PrimaryBtn
               pal={pal}
               onClick={() => {
-                saveReflection(r);
-                setSaved(true);
-                note("Saved — only in this browser.");
+                try {
+                  saveReflection(r);
+                  setSaved(true);
+                  note("Saved in this browser. Find it under Saved Reflections.");
+                } catch {
+                  note("Couldn't save — this browser is blocking storage (private mode?). Try Download instead.");
+                }
               }}
               disabled={saved}
             >
@@ -148,12 +168,11 @@ export default function ResultView({
           <GhostBtn pal={pal} onClick={() => doCopy(toPlainText(r), "Summary copied.")}>Copy summary</GhostBtn>
           <GhostBtn pal={pal} onClick={() => window.print()}>Print / save as PDF</GhostBtn>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 10 }}>
-          <GhostBtn pal={pal} small onClick={() => downloadFile(`${safeFilename(r.title)}.md`, toMarkdown(r), "text/markdown")}>Export Markdown</GhostBtn>
-          <GhostBtn pal={pal} small onClick={() => downloadFile(`${safeFilename(r.title)}.json`, toJSONExport(r), "application/json")}>Export JSON</GhostBtn>
-          <GhostBtn pal={pal} small onClick={() => doCopy(toSnapshot(r), "Snapshot copied — paste it into a text or email if you choose to.")}>Copy text/email snapshot</GhostBtn>
-          <GhostBtn pal={pal} small onClick={() => { downloadSnapshotImage(r, "square"); note("Image saved to your device — share it only if you choose to."); }}>Snapshot image (square)</GhostBtn>
-          <GhostBtn pal={pal} small onClick={() => { downloadSnapshotImage(r, "portrait"); note("Image saved to your device — share it only if you choose to."); }}>Snapshot image (tall)</GhostBtn>
+        <p style={{ fontSize: 13, fontWeight: 800, color: pal.sub, margin: "18px 0 8px" }}>Download a copy</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          <GhostBtn pal={pal} small onClick={() => { downloadSnapshotImage(r, "portrait"); note("Image downloaded."); }}>Image (.png)</GhostBtn>
+          <GhostBtn pal={pal} small onClick={() => { downloadFile(`${safeFilename(r.title)}.md`, toMarkdown(r), "text/markdown"); note("Text file downloaded."); }}>Text (.md)</GhostBtn>
+          <GhostBtn pal={pal} small onClick={() => { downloadFile(`${safeFilename(r.title)}.json`, toJSONExport(r), "application/json"); note("Data file downloaded."); }}>Data (.json)</GhostBtn>
         </div>
 
         <Card pal={pal} style={{ marginTop: 20 }}>
@@ -200,7 +219,7 @@ export default function ResultView({
           <p style={{ fontSize: 14, color: pal.sub, lineHeight: 1.65, margin: "0 0 8px" }}>
             Better than any AI: someone who knows you. A trusted family member, a mature friend, a pastor or counselor — show them this and ask what they&apos;d challenge.
           </p>
-          <a href="https://crossheartpray.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, fontWeight: 800, color: pal.brand, textDecoration: "none" }}>
+          <a href="https://crossheartpray.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, fontWeight: 800, color: pal.accentText, textDecoration: "none" }}>
             Want to sit with it through faith and Scripture? CrossHeartPray →
           </a>
         </Card>
@@ -211,7 +230,7 @@ export default function ResultView({
         </div>
 
         <p style={{ fontSize: 12.5, color: pal.sub, textAlign: "center", marginTop: 16, lineHeight: 1.6 }}>
-          Everything on this page stays in your browser unless you copy, print, or export it yourself. There&apos;s no account and no sync — clearing your browser data clears saved reflections too.
+          Nothing leaves this page unless you copy, print, or download it. Saved reflections: {STORAGE_NOTE}
         </p>
       </div>
     </div>
