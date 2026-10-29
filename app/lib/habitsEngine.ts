@@ -439,3 +439,16 @@ export function markToday(goalId: string): Streak {
 export function todayMarked(s: Streak | null): boolean {
   return !!s && s.days.includes(dayStr(new Date()));
 }
+
+// Days marked in the last 7 (today included). A missed day drops the streak
+// to zero; this number doesn't, so one bad day isn't the whole story.
+export function daysThisWeek(s: Streak): number {
+  const have = new Set(s.days);
+  const d = new Date();
+  let n = 0;
+  for (let i = 0; i < 7; i++) {
+    if (have.has(dayStr(d))) n++;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}

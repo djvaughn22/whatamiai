@@ -5,7 +5,7 @@
 
 import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useEffect, useState } from "react";
-import { composeHabitsResult, currentStreak, HABIT_GOALS, HABIT_OBSTACLES, HABIT_WHEN, loadStreak, markToday, todayMarked, type Streak } from "../lib/habitsEngine";
+import { composeHabitsResult, currentStreak, daysThisWeek, HABIT_GOALS, HABIT_OBSTACLES, HABIT_WHEN, loadStreak, markToday, todayMarked, type Streak } from "../lib/habitsEngine";
 import type { Reflection } from "../lib/types";
 import ResultView from "../components/ResultView";
 import { Card, Eyebrow, GhostBtn, PageHead, PrimaryBtn, Shell, TopBar, usePalette, type Palette } from "../components/ui";
@@ -14,13 +14,19 @@ function StreakCard({ pal, streak, onMark }: { pal: Palette; streak: Streak; onM
   const goal = HABIT_GOALS.find((g) => g.id === streak.goalId);
   const cur = currentStreak(streak);
   const done = todayMarked(streak);
+  const week = daysThisWeek(streak);
   return (
     <Card pal={pal} accent style={{ marginBottom: 20, textAlign: "center" }}>
       <Eyebrow pal={pal}>Your streak — {goal ? `${goal.emoji} ${goal.label.toLowerCase()}` : "current habit"}</Eyebrow>
       <p style={{ fontSize: 34, fontWeight: 900, color: pal.text, margin: "0 0 2px" }}>
         {cur} day{cur === 1 ? "" : "s"} 🔥
       </p>
-      <p style={{ fontSize: 13.5, fontWeight: 700, color: pal.sub, margin: "0 0 14px" }}>Best ever: {Math.max(streak.best, cur)} day{Math.max(streak.best, cur) === 1 ? "" : "s"}</p>
+      <p style={{ fontSize: 13.5, fontWeight: 700, color: pal.sub, margin: "0 0 4px" }}>
+        {week} of the last 7 days · Best ever: {Math.max(streak.best, cur)} day{Math.max(streak.best, cur) === 1 ? "" : "s"}
+      </p>
+      <p style={{ fontSize: 13.5, color: pal.sub, margin: "0 0 14px", lineHeight: 1.5 }}>
+        {cur === 0 && week > 0 ? "Missed a day? That's normal. Do today's smallest version and the count starts again." : " "}
+      </p>
       <PrimaryBtn pal={pal} disabled={done} onClick={onMark}>
         {done ? "✓ Today is in the books" : "I did today's step"}
       </PrimaryBtn>

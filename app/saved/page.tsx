@@ -1,14 +1,15 @@
 "use client";
 // Saved reflections — list, view, rename, delete, clear all, and the
-// combined view across modes. Everything lives in this browser only.
+// combined view across modes, plus backup / restore / erase (DataCard). Everything lives in this browser only.
 
 import { ANALYTICS_NOTE, STORAGE_NOTE } from "../lib/privacyCopy";
 import { useEffect, useState } from "react";
 import type { Reflection } from "../lib/types";
 import { MODE_LABEL } from "../lib/types";
-import { clearAllSaved, deleteReflection, listSaved, renameReflection, saveReflection } from "../lib/storage";
+import { deleteReflection, listSaved, renameReflection, saveReflection } from "../lib/storage";
 import { composeCombined } from "../lib/combined";
 import ResultView from "../components/ResultView";
+import DataCard from "../components/DataCard";
 import { Card, GhostBtn, PageHead, PrimaryBtn, Shell, TextLink, TopBar, usePalette } from "../components/ui";
 
 export default function SavedPage() {
@@ -130,21 +131,7 @@ export default function SavedPage() {
         </Card>
       )}
 
-      {items.length > 0 && (
-        <p style={{ textAlign: "center", marginTop: 26 }}>
-          <TextLink
-            pal={pal}
-            onClick={() => {
-              if (window.confirm("Clear ALL saved reflections from this browser? This can't be undone.")) {
-                clearAllSaved();
-                refresh();
-              }
-            }}
-          >
-            Clear all local data
-          </TextLink>
-        </p>
-      )}
+      <DataCard pal={pal} onChange={refresh} />
     </Shell>
   );
 }
