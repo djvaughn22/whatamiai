@@ -17,8 +17,9 @@ Push to `main` — Vercel auto-deploys production.
 ## Repo map
 
 - **Production:** https://whatamiai.com — branch `main`, auto-deploys on push (Vercel).
-- **Framework:** Next.js 15.3.3 (App Router). Build: `npm run build`. No test suite.
-- **Routes:** `/` , `/mirror`, `/patterns`, `/react`, `/money`, `/habits`, `/situation`, `/saved`
+- **Framework:** Next.js 15.3.3 (App Router). Build: `npm run build`. Tests: `npm test` (vitest); `npm run typecheck`.
+- **Routes:** `/` , `/mirror`, `/patterns`, `/react`, `/money`, `/habits`, `/situation`, `/phone`, `/saved`, `/about`. No API routes; no owner area.
+- **Portfolio map (all repos, domains, owner tools):** `/home/dj/OpenMirror/open-mirror/docs/PORTFOLIO_INDEX.md`.
 - **Family chrome:** `OpenMirrorNav.tsx` / `OpenMirrorFooter.tsx` / `OpenMirrorTheme.tsx` are synced copies — canonical source is the hub repo `packages/openmirror-ui/` + `scripts/sync-ui.sh`. Never edit the local copies.
 - **Theme:** family ☀️/🌙 toggle; `om-theme` localStorage key; light mode remaps family hexes (see hub `docs/OPEN_MIRROR_PATTERNS.md`).
 - **Persistence (localStorage):** `wai3-mirror-session`, `wai3-patterns-draft`, `wai3-situation-draft`, `wai3-saved-v1`, `wai-habit-streak-v1`, `wai-react-v1`
