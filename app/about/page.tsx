@@ -34,7 +34,7 @@ export default function AboutPage() {
 
         <h2 style={{ fontSize: 17, fontWeight: 900, margin: "0 0 8px" }}>Your data</h2>
         <p style={{ background: "#141d2e", border: "1px solid #26324c", borderRadius: 14, padding: "14px 16px", fontSize: 15, lineHeight: 1.65, margin: "0 0 28px" }}>
-          No account needed. The tools are rule-based and run in your browser. {STORAGE_NOTE}{" "}
+          The tools are rule-based and run in your browser. {STORAGE_NOTE}{" "}
           {ANALYTICS_NOTE} If you choose to continue a reflection with another AI, you copy it
           yourself, and you can review what will be included first.
         </p>

@@ -236,7 +236,8 @@ export function analyzePrompts(prompts: string[]): MirrorAnalysis {
   }));
 
   // one-sentence summary
-  const rolePhrase = roles[0] ? `as a ${roles[0].label.toLowerCase()}` : "in a mix of ways";
+  const roleLabel = roles[0]?.label.toLowerCase();
+  const rolePhrase = roleLabel ? `as ${/^[aeiou]/.test(roleLabel) ? "an" : "a"} ${roleLabel}` : "in a mix of ways";
   const c1 = categories[0]?.phrase;
   const c2 = categories[1]?.phrase;
   const focus = c1 && c2 ? `${c1}, followed by ${c2}` : c1 ?? "a wide mix of topics";

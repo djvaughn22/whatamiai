@@ -23,6 +23,7 @@ import {
 } from "../lib/phoneEngine";
 import { copyText, downloadFile, exportCategories, safeFilename, toAIPrompt, toJSONExport, toMarkdown, toPlainText } from "../lib/exporters";
 import { saveReflection } from "../lib/storage";
+import { downloadSnapshotImage } from "../lib/shareImage";
 import { Card, Eyebrow, GhostBtn, PageHead, PrimaryBtn, Shell, TopBar, usePalette, type Palette } from "../components/ui";
 
 function OptField({ pal, label, value, onSave, rows }: { pal: Palette; label: string; value: string; onSave: (v: string) => void; rows?: number }) {
@@ -30,11 +31,11 @@ function OptField({ pal, label, value, onSave, rows }: { pal: Palette; label: st
   const style = { width: "100%", boxSizing: "border-box" as const, background: pal.input, border: `1px solid ${pal.border}`, borderRadius: 10, padding: "9px 12px", fontSize: 13.5, color: pal.text, fontFamily: "inherit", lineHeight: 1.5 };
   return (
     <label style={{ display: "block", marginBottom: 8 }}>
-      <span style={{ display: "block", fontSize: 12.5, fontWeight: 800, color: pal.sub, marginBottom: 4 }}>{label} <span style={{ fontWeight: 700 }}>(optional)</span></span>
+      <span style={{ display: "block", fontSize: 12.5, fontWeight: 800, color: pal.sub, marginBottom: 4 }}>{label} <span style={{ fontWeight: 700 }}>(optional, saves as you type)</span></span>
       {rows ? (
-        <textarea value={v} rows={rows} onChange={(e) => setV(e.target.value)} onBlur={() => onSave(v)} style={{ ...style, resize: "vertical" }} />
+        <textarea value={v} rows={rows} onChange={(e) => { setV(e.target.value); onSave(e.target.value); }} style={{ ...style, resize: "vertical" }} />
       ) : (
-        <input value={v} onChange={(e) => setV(e.target.value)} onBlur={() => onSave(v)} style={style} />
+        <input value={v} onChange={(e) => { setV(e.target.value); onSave(e.target.value); }} style={style} />
       )}
     </label>
   );
@@ -108,6 +109,7 @@ export default function PhonePage() {
   };
 
   const restart = () => {
+    if (plan && (plan.done.length > 0 || plan.day1Total || plan.notes) && !window.confirm("Start over with a different focus? This clears this week's checkmarks and notes. Saved copies stay in Saved Reflections.")) return;
     clearPhonePlan();
     setPlan(null);
     setFocus("");
@@ -132,7 +134,7 @@ export default function PhonePage() {
           <OptField key="k" pal={pal} label="One phone use worth keeping" value={plan.keepUse ?? ""} onSave={(v) => patch({ keepUse: v })} />,
           <OptField key="c" pal={pal} label="Today, compared with Day 1" value={plan.day7 ?? ""} onSave={(v) => patch({ day7: v })} rows={3} />
         );
-      if (i === currentIndex && i !== 0 && i !== 5 && i !== 6)
+      if ((i === currentIndex || plan.notes?.[i]) && i !== 0 && i !== 5 && i !== 6)
         bits.push(<OptField key="n" pal={pal} label="A short note for today" value={plan.notes?.[i] ?? ""} onSave={(v) => patch({ notes: { ...(plan.notes ?? {}), [i]: v } })} />);
       return bits.length ? <div style={{ margin: "4px 0 10px" }}>{bits}</div> : null;
     };
@@ -211,13 +213,29 @@ export default function PhonePage() {
         </Card>
 
         <Card pal={pal} style={{ marginBottom: 20 }}>
-          <Eyebrow pal={pal}>Keep it, share it, or take it further — your call</Eyebrow>
+          <Eyebrow pal={pal}>Keep a copy of this week</Eyebrow>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-            <GhostBtn pal={pal} small onClick={() => { saveReflection(reflection()); note("Saved — only in this browser. Find it under saved reflections."); }}>Save on this device</GhostBtn>
-            <GhostBtn pal={pal} small onClick={async () => note((await copyText(toPlainText(reflection()))) ? "Summary copied." : "Couldn't copy — your browser blocked it.")}>Copy summary</GhostBtn>
-            <GhostBtn pal={pal} small onClick={() => window.print()}>Print / save as PDF</GhostBtn>
-            <GhostBtn pal={pal} small onClick={() => downloadFile(`${safeFilename(reflection().title)}.md`, toMarkdown(reflection()), "text/markdown")}>Export Markdown</GhostBtn>
-            <GhostBtn pal={pal} small onClick={() => downloadFile(`${safeFilename(reflection().title)}.json`, toJSONExport(reflection()), "application/json")}>Export JSON</GhostBtn>
+            <PrimaryBtn
+              pal={pal}
+              onClick={() => {
+                try {
+                  saveReflection(reflection());
+                  note("Saved a copy of this week. Find it under Saved Reflections.");
+                } catch {
+                  note("Couldn't save — this browser is blocking storage (private mode?). Try Download instead.");
+                }
+              }}
+            >
+              Save a copy
+            </PrimaryBtn>
+            <GhostBtn pal={pal} onClick={async () => note((await copyText(toPlainText(reflection()))) ? "Summary copied." : "Couldn't copy — your browser blocked it.")}>Copy summary</GhostBtn>
+            <GhostBtn pal={pal} onClick={() => window.print()}>Print / save as PDF</GhostBtn>
+          </div>
+          <p style={{ fontSize: 13, fontWeight: 800, color: pal.sub, margin: "16px 0 8px" }}>Download a copy</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <GhostBtn pal={pal} small onClick={() => { downloadSnapshotImage(reflection(), "portrait"); note("Image downloaded."); }}>Image (.png)</GhostBtn>
+            <GhostBtn pal={pal} small onClick={() => { downloadFile(`${safeFilename(reflection().title)}.md`, toMarkdown(reflection()), "text/markdown"); note("Text file downloaded."); }}>Text (.md)</GhostBtn>
+            <GhostBtn pal={pal} small onClick={() => { downloadFile(`${safeFilename(reflection().title)}.json`, toJSONExport(reflection()), "application/json"); note("Data file downloaded."); }}>Data (.json)</GhostBtn>
           </div>
           <div style={{ marginTop: 14 }}>
             <button
@@ -251,7 +269,7 @@ export default function PhonePage() {
         </p>
         <p style={{ textAlign: "center", display: "flex", gap: 10, justifyContent: "center" }}>
           <GhostBtn pal={pal} small onClick={restart}>Choose a different focus</GhostBtn>
-          <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All modes</GhostBtn>
+          <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All tools</GhostBtn>
         </p>
       </Shell>
     );
@@ -300,7 +318,7 @@ export default function PhonePage() {
         {STORAGE_NOTE} {ANALYTICS_NOTE}
       </p>
       <p style={{ textAlign: "center", marginTop: 14 }}>
-        <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All modes</GhostBtn>
+        <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All tools</GhostBtn>
       </p>
     </Shell>
   );

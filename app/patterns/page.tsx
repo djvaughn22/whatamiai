@@ -91,7 +91,10 @@ export default function PatternsPage() {
       )}
 
       {stage === "result" && result && (
-        <ResultView pal={pal} reflection={result} onRestart={restart} restartLabel="Retake the assessment" />
+        <>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: pal.text, margin: "0 0 16px", textAlign: "center" }}>What your answers show</h1>
+          <ResultView pal={pal} reflection={result} onRestart={restart} restartLabel="Answer them again" />
+        </>
       )}
     </Shell>
   );

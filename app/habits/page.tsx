@@ -72,12 +72,17 @@ export default function HabitsPage() {
     const emoji = typeof result.meta?.goalEmoji === "string" ? result.meta.goalEmoji : "✅";
     return (
       <Shell pal={pal} narrow>
-        <TopBar pal={pal} label="7-Day Starter" />
+        <TopBar pal={pal} label="7-Day Habit Starter" />
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <div style={{ fontSize: 44, marginBottom: 8 }} aria-hidden>{emoji}</div>
           <h1 style={{ fontSize: "clamp(1.6rem, 8vw, 2.2rem)", fontWeight: 900, color: pal.text, margin: 0, lineHeight: 1.15 }}>Your week is built</h1>
           <p style={{ fontSize: 14.5, color: pal.sub, margin: "8px 0 0", lineHeight: 1.6 }}>Come back each day and tap the streak button — the streak is the plan&apos;s engine.</p>
         </div>
+        {streak && goal && streak.goalId !== goal.id && streak.days.length > 0 && (
+          <p style={{ fontSize: 13.5, color: pal.sub, textAlign: "center", lineHeight: 1.6, margin: "0 0 12px" }}>
+            Heads up: marking today starts a new streak for this habit and ends your current one. Your best-ever count is kept.
+          </p>
+        )}
         {(streak || goal) && (
           <StreakCard pal={pal} streak={streak && streak.goalId === goal?.id ? streak : { goalId: goal?.id ?? "", days: [], best: streak?.best ?? 0 }} onMark={mark} />
         )}
@@ -88,7 +93,7 @@ export default function HabitsPage() {
 
   return (
     <Shell pal={pal} narrow>
-      <TopBar pal={pal} label="7-Day Starter" />
+      <TopBar pal={pal} label="7-Day Habit Starter" />
       <PageHead
         pal={pal}
         title="One habit. One week. Sized to real life."
@@ -178,7 +183,7 @@ export default function HabitsPage() {
         </p>
       )}
       <p style={{ textAlign: "center", marginTop: 14 }}>
-        <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All modes</GhostBtn>
+        <GhostBtn pal={pal} small onClick={() => (window.location.href = "/")}>← All tools</GhostBtn>
       </p>
     </Shell>
   );

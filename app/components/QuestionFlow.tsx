@@ -18,6 +18,7 @@ export default function QuestionFlow({
   onRestart,
   startIndex = 0,
   onIndex,
+  keptNote = "Answers save in this browser as you go, so a refresh won't lose your place.",
 }: {
   pal: Palette;
   questions: Question[];
@@ -27,6 +28,8 @@ export default function QuestionFlow({
   onRestart: () => void;
   startIndex?: number;
   onIndex?: (i: number) => void;
+  /** where answers are kept — must match the page's real storage */
+  keptNote?: string;
 }) {
   const visible = useMemo(() => questions.filter((q) => !q.showIf || q.showIf(answers)), [questions, answers]);
   const [idx, setIdxRaw] = useState(Math.min(startIndex, Math.max(visible.length - 1, 0)));
@@ -185,7 +188,7 @@ export default function QuestionFlow({
       </div>
 
       <p style={{ fontSize: 12.5, color: pal.sub, marginTop: 18, lineHeight: 1.6 }}>
-        Answers save in this browser as you go, so a refresh won&apos;t lose your place. {ANALYTICS_NOTE}
+        {keptNote} {ANALYTICS_NOTE}
       </p>
     </div>
   );

@@ -208,6 +208,7 @@ export default function MirrorPage() {
 
       {stage === "result" && result && (
         <>
+          <h1 style={{ fontSize: 26, fontWeight: 900, color: pal.text, margin: "0 0 16px", textAlign: "center" }}>What your prompts show</h1>
           <ResultView pal={pal} reflection={result} onRestart={clearEverything} restartLabel="Start a new Mirror" />
           <Card pal={pal} style={{ marginTop: 20 }} accent>
             <Eyebrow pal={pal}>Test this read</Eyebrow>
@@ -226,6 +227,7 @@ export default function MirrorPage() {
           answers={followAnswers}
           onAnswers={setFollowAnswers}
           onDone={applyFollowups}
+          keptNote="Answers are kept in this tab until you close it."
           onRestart={() => {
             setFollowAnswers({});
             setStage("result");

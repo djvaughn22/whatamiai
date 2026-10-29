@@ -318,7 +318,7 @@ export function composeHabitsResult(h: HabitInputs): Reflection {
     kind: "experiment",
     experiment: {
       title: "Run the seven days above",
-      action: `Run the plan at ${h.when.toLowerCase()}, at whatever size actually happens.`,
+      action: `${days[0]} Then one step a day in your ${h.when.toLowerCase()} slot, at whatever size actually happens.`,
       rationale: `You picked ${goal.label.toLowerCase()}, starting from “${softLower(levelText)}”, with “${softLower(h.obstacle)}” as the usual killer — the plan is sized to exactly that.`,
       duration: "7 days",
       observe: [
