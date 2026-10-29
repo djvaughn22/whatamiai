@@ -88,6 +88,9 @@ function DayCard({ pal, day, index, done, current, onToggle, children }: { pal: 
 export default function PhonePage() {
   const pal = usePalette();
   const [plan, setPlan] = useState<PhonePlan | null>(null);
+  // false until this browser's storage has been read — until then we can't
+  // know whether to show the saved plan or the start screen, so show neither
+  const [checked, setChecked] = useState(false);
   const [focus, setFocus] = useState("");
   const [flash, setFlash] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -100,10 +103,18 @@ export default function PhonePage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPlan(loadPhonePlan());
+    setChecked(true);
   }, []);
 
   const start = () => {
     if (!focus) return;
+    // never overwrite a plan that exists (e.g. started in another tab)
+    const existing = loadPhonePlan();
+    if (existing) {
+      setPlan(existing);
+      window.scrollTo(0, 0);
+      return;
+    }
     setPlan(startPhonePlan(focus));
     window.scrollTo(0, 0);
   };
@@ -115,6 +126,23 @@ export default function PhonePage() {
     setFocus("");
     window.scrollTo(0, 0);
   };
+
+  if (!checked) {
+    return (
+      <Shell pal={pal} narrow>
+        <TopBar pal={pal} label="Intentional Phone Use" />
+        <PageHead pal={pal} title="More intentional phone use" />
+        <Card pal={pal} style={{ textAlign: "center" }}>
+          <p role="status" aria-live="polite" style={{ fontSize: 15, color: pal.sub, margin: 0 }}>
+            Checking for your saved plan…
+          </p>
+          <noscript>
+            <p style={{ fontSize: 14, color: pal.sub, margin: "8px 0 0" }}>This tool needs JavaScript turned on.</p>
+          </noscript>
+        </Card>
+      </Shell>
+    );
+  }
 
   if (plan) {
     const doneCount = plan.done.length;
