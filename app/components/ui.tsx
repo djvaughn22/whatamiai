@@ -130,7 +130,7 @@ export function PageHead({ pal, title, sub }: { pal: Palette; title: string; sub
 export function TopBar({ pal, label, right }: { pal: Palette; label: string; right?: React.ReactNode }) {
   return (
     <div className="no-print" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26, gap: 10 }}>
-      <a href="/" style={{ color: pal.sub, fontSize: 14, fontWeight: 700, textDecoration: "none" }}>← WhatAmIAI</a>
+      <a href="/" style={{ color: pal.sub, fontSize: 14, fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", minHeight: 44, paddingRight: 8 }}>← WhatAmIAI</a>
       <span style={{ fontSize: 12.5, fontWeight: 800, color: pal.accentText, textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</span>
       <span>{right}</span>
     </div>
