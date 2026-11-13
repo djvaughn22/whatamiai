@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   },
   description:
     "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Each ends with one small next step you can save or print.",
+  // Link previews in texts and chats. The picture is app/opengraph-image.tsx.
+  // No og:title/url here: set at the root they'd make every page's preview
+  // claim to be the home page. Previews fall back to each page's own title.
+  openGraph: { type: "website", siteName: "WhatAmIAI" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
