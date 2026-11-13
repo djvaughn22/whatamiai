@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { listSaved } from "./lib/storage";
 import { currentStreak, loadStreak } from "./lib/habitsEngine";
 import { loadPhonePlan } from "./lib/phoneEngine";
+import { draftResumes } from "./lib/resume";
 import { ANALYTICS_NOTE, STORAGE_NOTE } from "./lib/privacyCopy";
 import { Card, Eyebrow, Shell, usePalette, type Palette } from "./components/ui";
 
@@ -57,6 +58,8 @@ export default function Home() {
   useEffect(() => {
     const items: Resume[] = [];
     try {
+      // Unfinished answers first: they're the likeliest reason to come back.
+      items.push(...draftResumes(window.localStorage));
       const plan = loadPhonePlan();
       if (plan) items.push({ href: "/phone", label: "📵 Your phone week", detail: `${plan.done.length} of 7 days done` });
       const streak = loadStreak();
@@ -98,7 +101,7 @@ export default function Home() {
           <Eyebrow pal={pal}>Pick up where you left off</Eyebrow>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {resume.map((r) => (
-              <a key={r.href} href={r.href} style={{ display: "flex", justifyContent: "space-between", gap: 12, color: pal.text, textDecoration: "none", fontWeight: 800, fontSize: 15.5, padding: "8px 0" }}>
+              <a key={r.href} href={r.href} style={{ display: "flex", justifyContent: "space-between", gap: 12, color: pal.text, textDecoration: "none", fontWeight: 800, fontSize: 15.5, padding: "8px 0", minHeight: 44, alignItems: "center", flexWrap: "wrap", boxSizing: "border-box" }}>
                 <span>{r.label}</span>
                 <span style={{ color: pal.sub, fontWeight: 700, fontSize: 14 }}>{r.detail} →</span>
               </a>
