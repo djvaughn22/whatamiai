@@ -10,6 +10,10 @@ import type { Reflection } from "../lib/types";
 import ResultView from "../components/ResultView";
 import { Card, Eyebrow, GhostBtn, PageHead, PrimaryBtn, Shell, TopBar, usePalette, type Palette } from "../components/ui";
 
+// Nov 14 2026 (owner brief: no manipulative streaks, no guilt). The card counts
+// the days you did it this week instead of a run that resets to zero, and
+// drops the fire and the "best ever". The stored data is unchanged
+// (wai-habit-streak-v1), so nobody's history is lost.
 function StreakCard({ pal, streak, onMark }: { pal: Palette; streak: Streak; onMark: () => void }) {
   const goal = HABIT_GOALS.find((g) => g.id === streak.goalId);
   const cur = currentStreak(streak);
@@ -17,15 +21,15 @@ function StreakCard({ pal, streak, onMark }: { pal: Palette; streak: Streak; onM
   const week = daysThisWeek(streak);
   return (
     <Card pal={pal} accent style={{ marginBottom: 20, textAlign: "center" }}>
-      <Eyebrow pal={pal}>Your streak — {goal ? `${goal.emoji} ${goal.label.toLowerCase()}` : "current habit"}</Eyebrow>
+      <Eyebrow pal={pal}>Your week — {goal ? `${goal.emoji} ${goal.label.toLowerCase()}` : "current habit"}</Eyebrow>
       <p style={{ fontSize: 34, fontWeight: 900, color: pal.text, margin: "0 0 2px" }}>
-        {cur} day{cur === 1 ? "" : "s"} 🔥
+        {week} of 7 days
       </p>
       <p style={{ fontSize: 13.5, fontWeight: 700, color: pal.sub, margin: "0 0 4px" }}>
-        {week} of the last 7 days · Best ever: {Math.max(streak.best, cur)} day{Math.max(streak.best, cur) === 1 ? "" : "s"}
+        Days you did it in the last 7
       </p>
       <p style={{ fontSize: 13.5, color: pal.sub, margin: "0 0 14px", lineHeight: 1.5 }}>
-        {cur === 0 && week > 0 ? "Missed a day? That's normal. Do today's smallest version and the count starts again." : " "}
+        {cur === 0 && week > 0 ? "Missed a day? That's normal. Today's smallest version still counts." : " "}
       </p>
       <PrimaryBtn pal={pal} disabled={done} onClick={onMark}>
         {done ? "✓ Today is in the books" : "I did today's step"}
@@ -103,7 +107,7 @@ export default function HabitsPage() {
       <PageHead
         pal={pal}
         title="One habit. One week. Sized to real life."
-        sub="Pick the habit, answer three taps, get a day-by-day starter plan — small on purpose, with a streak to keep."
+        sub="Pick the habit, answer three taps, get a day-by-day starter plan — small on purpose, with your days marked as you go."
       />
 
       {streak && <StreakCard pal={pal} streak={streak} onMark={mark} />}

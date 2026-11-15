@@ -69,7 +69,7 @@ export const MODE_DEFS: ModeDef[] = [
     route: "/habits",
     label: MODE_LABEL.habits,
     tabTitle: MODE_LABEL.habits,
-    description: "The quick, streak-oriented habit starter: three taps build a week sized to where you are.",
+    description: "The quick habit starter: three taps build a week sized to where you are, with the days you did it marked.",
     createsReflection: true,
     draftSupport: false,
     saveExport: true,

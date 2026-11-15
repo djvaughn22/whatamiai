@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { listSaved } from "./lib/storage";
-import { currentStreak, loadStreak } from "./lib/habitsEngine";
+import { currentStreak, daysThisWeek, loadStreak } from "./lib/habitsEngine";
 import { loadPhonePlan } from "./lib/phoneEngine";
 import { draftResumes } from "./lib/resume";
 import { ANALYTICS_NOTE, STORAGE_NOTE } from "./lib/privacyCopy";
@@ -27,7 +27,7 @@ const GROUPS: { title: string; tools: Tool[] }[] = [
     title: "Make a small change",
     tools: [
       { href: "/money", emoji: "💵", name: "Money Check", time: "3 numbers + 3 taps", text: "See what's really left each month after bills and debt, and one next step." },
-      { href: "/habits", emoji: "🏃", name: "7-Day Habit Starter", time: "3 taps", text: "Exercise, eating, sleep, water, quiet time, or less phone. A one-week plan with a streak." },
+      { href: "/habits", emoji: "🏃", name: "7-Day Habit Starter", time: "3 taps", text: "Exercise, eating, sleep, water, quiet time, or less phone. A one-week plan, with your days marked as you go." },
       { href: "/phone", emoji: "📵", name: "Intentional Phone Use", time: "7 small days", text: "Pick the one thing you'd like to use your phone less for, then take it a day at a time." },
     ],
   },
@@ -65,7 +65,7 @@ export default function Home() {
       const streak = loadStreak();
       if (streak) {
         const n = currentStreak(streak);
-        items.push({ href: "/habits", label: "🏃 Your habit week", detail: n > 0 ? `${n}-day streak` : "Mark today when you do it" });
+        items.push({ href: "/habits", label: "🏃 Your habit week", detail: n > 0 ? `${daysThisWeek(streak)} of the last 7 days` : "Mark today when you do it" });
       }
       const saved = listSaved().length;
       if (saved > 0) items.push({ href: "/saved", label: "💾 Saved reflections", detail: `${saved} saved` });
