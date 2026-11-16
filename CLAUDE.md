@@ -1,18 +1,18 @@
 # WhatAmIAI (whatamiai.com)
-Secular self-reflection, seven modes, all local + deterministic. Accent: **#E879F9**.
-- **Modes** (registry: `app/lib/modes.ts` — canonical labels, one per route): `/mirror`, `/situation`, `/patterns`, `/money`, `/habits` (quick streak starter), `/react` (scenario cards), `/phone` (deeper intentional phone-use week). `/saved` lists local saves + combined view.
-- **Reflection Engine 2.0** (`app/lib/types.ts`): sections carry `kind` + typed payloads — evidence pool, observations w/ text confidence labels, interpretations that ALWAYS carry an alternative or check question, result-specific `challenge` sections, typed experiments (busy/minimum versions). Exporters/snapshots read kinds, never heading regexes. One shared AI builder (`toAIPrompt`) with ground rules + privacy preview/redaction. Old `wai3-saved-v1` items have none of this and must keep rendering (tolerant reader in `storage.ts` — never rewrite stored data).
-- **Copy guard** (`app/lib/copyGuard.ts` + tests): composed output must never claim motives, permanence, identity, or diagnosis. User-quoted spans (curly quotes) are exempt. `npm test` runs 280+ tests; keep them green.
-- **Safety pipeline** (`app/lib/safety.ts`): 7 categories × 3 levels, category-specific referrals; `/mirror` scans pasted prompts + follow-ups. Mentions never interrupt; concern/immediate do.
-- **Engines are rule-based** (`app/lib/*Engine.ts`): every observation traces to an answer or matched prompts. No hidden scoring, no personality types, no paid APIs. Humble language only ("one possibility worth considering…", never "you are definitely…").
-- **Privacy is a feature:** pasted prompts live in sessionStorage only; drafts/saves in localStorage; answers never in URLs, logs, or analytics. Safety regexes (`app/lib/safety.ts`) interrupt with crisis resources — keep them ahead of reflection output.
-- No labels/boxes for the user; bridges to CrossHeartPray for the faith version.
+Family history with the evidence showing. Accent: **#E879F9**. Rebuilt 2026-11-15 on branch `rebuild/family-history` (preview only until the owner approves cutover). The earlier self-reflection tools are preserved at tag `whatamiai-legacy-2026-11-15` / branch `archive/legacy-whatamiai` (docs/RESTORE-LEGACY.md).
+
+- **Product rules (never break):** never invent ancestors, dates, places, relationships or records. Every fact's label comes from attached citations (app/lib/family/evidence.ts): Verified, Supported, Family memory, Possible match, Records disagree, No source yet. Other people's trees and AI chats never lift a fact above Possible match. No numeric confidence anywhere. Stories use only recorded facts, quote memories as memories, list gaps, and never write feelings, dialogue or scenes.
+- **Data:** IndexedDB in the visitor's browser, normalized per record type (app/lib/family/store.ts). Every edit is a pure op returning a Patch (app/lib/family/ops.ts) that also writes change history. No server data, no API routes, no env vars.
+- **Privacy:** no analytics script (GA removed: outbound research links carry names). Family pages are noindex. Living people are private by default (app/lib/family/living.ts). Page titles stay generic: never put a person's name in a title or a WhatAmIAI URL.
+- **The owner's own family is never in this repo or on the site.** The repo is PUBLIC. Use the made-up example family (app/lib/family/example.ts) for demos and tests.
+- **Outside data:** only the Library of Congress newspaper API, called from the browser (app/lib/family/loc.ts, 8/minute cap). Everything else is a link to the holder's own search page with an honest access label (app/lib/family/research.ts). FamilySearch and National Archives APIs need approvals (docs/RESEARCH.md).
+- **Tests:** `npm test` (vitest), `npm run typecheck`, `npm run build`. Keep them green.
+- Docs: docs/ARCHITECTURE.md, docs/PRIVACY-SECURITY.md, docs/BILLING.md, docs/RESEARCH.md, HANDOFF.md.
 
 ## Open Mirror family rules
-- One of 11 Open Mirror LLC sites (hub: openmirrorllc.com, repo djvaughn22/open-mirror). Baseline tag: `mvp-1`.
-- **Design:** flat + cool. bg `#0b1220`, surface `#141d2e`, border `#26324c`, text `#e8edf5`, muted `#94a3b8`. No glass, no gradients, **no red**.
-- **Shared chrome is SYNCED, not owned here:** `OpenMirrorNav.tsx`, `OpenMirrorFooter.tsx`, `OpenMirrorTheme.tsx` in the app folder are copies from the hub repo `packages/openmirror-ui/`. NEVER edit them here — edit in the hub, run its `scripts/sync-ui.sh`, then rebuild/commit each satellite.
-- Nav + footer mount in `layout.tsx`. Footer = OPEN MIRROR LLC · ABOUT · ✝️ ❤️ 🙏 (the icons ARE the CrossHeartPray link — no word).
-- ☀️/🌙 family toggle (`om-theme`) lives in the bar; pages that compute JS colors follow the `om-theme` window event.
-- **Copy style:** DJ's words. Short, plain, human. Never wordy or AI-sounding.
-- **Deploys:** push to `main` = production deploy (Vercel). Batch related edits into one commit.
+- One of the Open Mirror LLC sites (hub: openmirrorllc.com, repo djvaughn22/open-mirror).
+- **Design:** dark hub palette by default (bg `#0b1220`, surface `#141d2e`, border `#26324c`, text `#e8edf5`, muted `#94a3b8`), light mode via the family toggle. Solid surfaces: no glass, no gradients, no glow. Design system lives in app/wai.css; evidence colors always come with an icon and words.
+- **Shared chrome is SYNCED, not owned here:** `OpenMirrorNav.tsx`, `OpenMirrorFooter.tsx`, `OpenMirrorTheme.tsx` are copies from the hub repo `packages/openmirror-ui/`. NEVER edit them here. The OPEN MIRROR FAMILY STYLE OVERRIDE block in globals.css is family-wide too: leave it.
+- Footer = OpenMirrorLLC.com · About · ✝️ ❤️ 🙏; Contact and Disclaimer anchor into this site's About page (`#contact`, `#disclaimer`).
+- **Copy style:** the owner's words. Short, plain, human. No filler, no slogans, no "founder".
+- **Deploys:** push to `main` = production (Vercel). Other branches get preview deployments.
