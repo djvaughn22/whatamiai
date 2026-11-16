@@ -14,6 +14,7 @@ import { dateRange } from "./dates";
 import { activeFacts, primaryName } from "./names";
 import { countryOf, stateName, usStateOf } from "./places";
 import { isLiving } from "./living";
+import { estimateBirth } from "./estimate";
 import type { Access, FamilyData, Id } from "./types";
 
 export type LeadGroup = "Census" | "Military" | "Vital records" | "Immigration" | "Newspapers" | "Burials" | "Old country" | "Other trees" | "Guides";
@@ -105,6 +106,9 @@ interface Profile {
   bornAbroad: string | null;
   military: { branch: string; year?: number }[];
   living: boolean;
+  explicitLiving: boolean;
+  /** set when the birth range is an estimate from relatives */
+  estimated?: string;
 }
 
 export function profileOf(data: FamilyData, personId: Id): Profile {
@@ -112,8 +116,16 @@ export function profileOf(data: FamilyData, personId: Id): Profile {
   const n = primaryName(data, personId);
   const birthFact = facts.find((f) => f.type === "birth" && f.preferred) ?? facts.find((f) => f.type === "birth") ?? facts.find((f) => f.type === "baptism");
   const deathFact = facts.find((f) => f.type === "death" && f.preferred) ?? facts.find((f) => f.type === "death") ?? facts.find((f) => f.type === "burial");
-  const birth = dateRange(birthFact?.date);
+  let birth = dateRange(birthFact?.date);
   const death = dateRange(deathFact?.date);
+  let estimated: string | undefined;
+  if (!birth) {
+    const est = estimateBirth(data, personId);
+    if (est) {
+      birth = est.range;
+      estimated = `born about ${est.range[0]}–${est.range[1]}, ${est.basis}`;
+    }
+  }
   const places = [...new Set(facts.map((f) => f.place).filter((p): p is string => !!p))];
   for (const r of Object.values(data.relationships)) {
     if (r.type !== "partner" || (r.a !== personId && r.b !== personId)) continue;
@@ -139,6 +151,8 @@ export function profileOf(data: FamilyData, personId: Id): Profile {
     bornAbroad: birthCountry && birthCountry !== "United States of America" ? birthCountry : null,
     military,
     living: isLiving(data, personId),
+    explicitLiving: data.people[personId]?.living === "yes",
+    estimated,
   };
 }
 
@@ -196,7 +210,7 @@ export function researchPlan(data: FamilyData, personId: Id): Lead[] {
   const home = p.states[0];
   const searchFor = [p.name, p.birthYear ? `born about ${p.birthYear}` : "", home ? stateName(home) : ""].filter(Boolean).join(", ");
 
-  if (p.living) {
+  if (p.explicitLiving || (p.living && !p.birth)) {
     leads.push({
       key: "living-note",
       group: "Guides",
@@ -219,7 +233,7 @@ export function researchPlan(data: FamilyData, personId: Id): Lead[] {
         key: `us-census-${year}`,
         group: "Census",
         title: `${year} U.S. census`,
-        why: `${he} would have been ${age || "alive"}${age ? " years old" : ""} on census day, if living in the United States.`,
+        why: `${he} would have been ${age || "alive"}${age ? " years old" : ""} on census day, if living in the United States${p.estimated ? ` (${p.estimated})` : ""}.`,
         tells: CENSUS_TELLS[year],
         searchFor,
         url: fsSearch(p, { "f.collectionId": FS_CENSUS[year] }),

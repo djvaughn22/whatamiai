@@ -4,6 +4,7 @@
 
 import { dateRange } from "./dates";
 import { activeFacts, primaryName } from "./names";
+import { estimateBirth } from "./estimate";
 import type { FamilyData, Id } from "./types";
 
 export const PRESUME_DECEASED_AFTER_YEARS = 110;
@@ -22,6 +23,8 @@ export function livingStatus(data: FamilyData, personId: Id, now = new Date()): 
   const year = now.getUTCFullYear();
   if (r && r[1] < year - PRESUME_DECEASED_AFTER_YEARS) return { living: false, why: `Born more than ${PRESUME_DECEASED_AFTER_YEARS} years ago.` };
   if (r) return { living: true, why: "Born within the last 110 years with no death recorded, so treated as living." };
+  const est = estimateBirth(data, personId);
+  if (est && est.range[1] < year - PRESUME_DECEASED_AFTER_YEARS) return { living: false, why: `Born before ${est.range[1]} (${est.basis}).` };
   return { living: true, why: "No birth or death date yet, so treated as living to be safe." };
 }
 

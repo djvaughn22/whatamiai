@@ -88,6 +88,17 @@ export function parseDate(input: string | undefined | null): FuzzyDate | undefin
     const y2 = m[2].length === 2 ? Math.floor(y1 / 100) * 100 + +m[2] : +m[2];
     if (validYear(y1) && validYear(y2) && y2 > y1) return { kind: "between", y: y1, y2, text };
   }
+  // "early 1900s" (century) and "late 1910s" (decade)
+  if ((m = s.match(/^(early|mid|late)[- ](\d{2})00'?s$/))) {
+    const c = +m[2] * 100;
+    const [a, b] = m[1] === "early" ? [0, 29] : m[1] === "mid" ? [30, 69] : [70, 99];
+    if (validYear(c)) return { kind: "between", y: c + a, y2: c + b, text };
+  }
+  if ((m = s.match(/^(early|mid|late)[- ](\d{3})0'?s$/))) {
+    const dcd = +m[2] * 10;
+    const [a, b] = m[1] === "early" ? [0, 3] : m[1] === "mid" ? [3, 6] : [6, 9];
+    if (validYear(dcd)) return { kind: "between", y: dcd + a, y2: dcd + b, text };
+  }
   if ((m = s.match(/^(\d{3})0'?s$/))) {
     const y = +m[1] * 10;
     if (validYear(y)) return { kind: "between", y, y2: y + 9, text };

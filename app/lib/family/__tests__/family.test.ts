@@ -480,3 +480,27 @@ describe("story wording", () => {
     expect(text).not.toMatch(/quotas/);
   });
 });
+
+describe("estimates from relatives", () => {
+  it("reads early, mid and late centuries and decades", () => {
+    expect(parseDate("early 1900s")).toMatchObject({ kind: "between", y: 1900, y2: 1929 });
+    expect(parseDate("late 1800s")).toMatchObject({ kind: "between", y: 1870, y2: 1899 });
+    expect(parseDate("early 1910s")).toMatchObject({ kind: "between", y: 1910, y2: 1913 });
+  });
+  it("treats an undated parent of someone born long ago as deceased and plans census searches", () => {
+    let d = blank();
+    const kid = addPerson(d, { given: "Harold", surname: "Benton", sex: "male", birthDate: "about 1918" }, env());
+    d = applyPatch(d, kid.patch);
+    const dad = addPerson(d, { given: "Amos", surname: "Benton", sex: "male" }, env());
+    d = applyPatch(d, dad.patch);
+    d = applyPatch(d, addRelationship(d, { type: "parent", a: dad.id, b: kid.id }, env()).patch);
+    d = applyPatch(d, addFact(d, { personId: dad.id, type: "residence", place: "Sedalia, Missouri" }, { knownHow: "memory" }, env()).patch);
+    expect(isLiving(d, dad.id)).toBe(false);
+    const plan = researchPlan(d, dad.id);
+    const keys = plan.map((l) => l.key);
+    expect(keys).toContain("us-census-1900");
+    expect(keys).toContain("mo-death-certificates");
+    expect(keys).not.toContain("living-note");
+    expect(plan.find((l) => l.key === "us-census-1900")!.why).toMatch(/estimated from Harold Benton's birth/);
+  });
+});
