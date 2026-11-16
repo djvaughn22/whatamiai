@@ -1,22 +1,30 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/source-serif-4";
 import "./globals.css";
+import "./wai.css";
 import OpenMirrorFooter from "./OpenMirrorFooter";
 import OpenMirrorNav from "./OpenMirrorNav";
-import Script from "next/script";
+import { FamilyProvider } from "./components/FamilyProvider";
+import SectionNav from "./components/family/SectionNav";
+
+// No analytics script in the family-history version: names, places and dates
+// people type must never reach a third party, and outbound record links carry
+// names in their search terms. See docs/PRIVACY-SECURITY.md before adding any.
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://whatamiai.com"),
   title: {
-    default: "WhatAmIAI",
+    default: "WhatAmIAI: discover how you came to be",
     template: "%s | WhatAmIAI",
   },
   description:
-    "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Each ends with one small next step you can save or print.",
-  // Link previews in texts and chats. The picture is app/opengraph-image.tsx.
-  // No og:title/url here: set at the root they'd make every page's preview
-  // claim to be the home page. Previews fall back to each page's own title.
+    "Build your family tree with the evidence showing: what's proven by records, what's a family memory, and what's still a question. Free newspaper search, a research plan for every person, and stories with sources.",
   openGraph: { type: "website", siteName: "WhatAmIAI" },
   twitter: { card: "summary_large_image" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0b1220",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -26,30 +34,30 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <OpenMirrorNav
           site="WhatAmIAI.com"
           accent="#E879F9"
-          links={[
-            { emoji: "🧭", name: "My Situation", href: "/situation" },
-            { emoji: "⚡", name: "How Do I React?", href: "/react" },
-            { emoji: "🔁", name: "My Overall Patterns", href: "/patterns" },
-            { emoji: "🪞", name: "My AI Mirror", href: "/mirror" },
-            { emoji: "💵", name: "Money Check", href: "/money" },
-            { emoji: "🏃", name: "7-Day Habit Starter", href: "/habits" },
-            { emoji: "📵", name: "Intentional Phone Use", href: "/phone" },
-            { emoji: "💾", name: "Saved Reflections", href: "/saved" },
-            { emoji: "ℹ️", name: "About WhatAmIAI", href: "/about" },
+          groups={[
+            {
+              label: "Your family",
+              links: [
+                { emoji: "🧭", name: "Discover", href: "/", note: "Start with a name, place or year" },
+                { emoji: "🌳", name: "My Family", href: "/family", note: "Your tree and everyone in it" },
+                { emoji: "🗓️", name: "Timeline", href: "/timeline", note: "Lives in order, with history beside them" },
+                { emoji: "📜", name: "Records", href: "/records", note: "Newspapers and where to look" },
+                { emoji: "📖", name: "Stories", href: "/stories", note: "Stories and a printable book, with sources" },
+              ],
+            },
+            {
+              label: "WhatAmIAI",
+              links: [
+                { emoji: "💾", name: "Your data", href: "/family/data", note: "Import, export, back up, erase" },
+                { emoji: "🏷️", name: "Pricing", href: "/pricing" },
+                { emoji: "ℹ️", name: "About WhatAmIAI", href: "/about" },
+              ],
+            },
           ]}
         />
-        {children}
+        <SectionNav />
+        <FamilyProvider>{children}</FamilyProvider>
         <OpenMirrorFooter />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-09TFJRG35S"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-09TFJRG35S');`}
-        </Script>
       </body>
     </html>
   );

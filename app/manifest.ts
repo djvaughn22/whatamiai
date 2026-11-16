@@ -1,13 +1,11 @@
 import type { MetadataRoute } from "next";
 
-// Installable-app manifest — same app-readiness layer as thedjcares.com,
-// stepinthering.com, and idontcry.com.
+// Installable-app manifest, same app-readiness layer as the other Open Mirror sites.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "WhatAmIAI",
     short_name: "WhatAmIAI",
-    description:
-      "Short tap-to-answer tools for a decision, your money, how you react, a habit, or your phone. Each ends with one small next step.",
+    description: "Family history with the evidence showing: records, family memories and open questions, kept apart.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

@@ -1,10 +1,9 @@
 // Share preview for every page that doesn't set its own: 1200×630 PNG in the
-// site's dark palette (app/components/ui.tsx: bg, text, sub; brand #E879F9).
-// Words match the home page. No "free" claims, no AI branding.
+// site's dark palette (bg, text, sub; brand #E879F9). Words match the home page.
 
 import { ImageResponse } from "next/og";
 
-export const alt = "WhatAmIAI: think one thing through. Leave with a next step.";
+export const alt = "WhatAmIAI: discover how you came to be.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -32,11 +31,11 @@ export default function OpengraphImage() {
         <div style={{ width: 140, height: 10, borderRadius: 5, background: BRAND, display: "flex" }} />
         <div style={{ marginTop: 36, fontSize: 30, letterSpacing: 6, color: SUB, display: "flex" }}>WHATAMIAI.COM</div>
         <div style={{ marginTop: 20, fontSize: 84, lineHeight: 1.08, display: "flex", flexWrap: "wrap" }}>
-          <span>Think one thing through.&nbsp;</span>
-          <span style={{ color: BRAND }}>Leave with a next step.</span>
+          <span>Discover how you&nbsp;</span>
+          <span style={{ color: BRAND }}>came to be.</span>
         </div>
         <div style={{ marginTop: 28, fontSize: 36, color: SUB, lineHeight: 1.35, display: "flex" }}>
-          Short tools you answer mostly by tapping. No sign-up. Your answers stay in your browser.
+          Family history with the evidence showing: records, family memories and open questions, kept apart.
         </div>
       </div>
     ),
