@@ -24,9 +24,25 @@ The reflection tools (home, seven tools, Saved, About) keep their URLs, look and
 - Tag `live-before-family-history-pages-20261119` = 7b46eae (production before this release). Vercel keeps that deployment: https://whatamiai-1909q5w6a-djvaughn22s-projects.vercel.app (promote it in Vercel for an instant rollback).
 - Or: `git revert` the release commit(s) on `main` and push.
 
+## Live
+
+Deployed 2026-11-19 (push to `main`, Vercel production). Code commit `90188d7`; this handoff file followed in a docs-only commit.
+
+- https://whatamiai.com/discover and https://whatamiai.com/family: 200. All ten reflection-tool URLs: 200. `/pricing`, `/earlier`, `/records`: 404 (left out). Unknown URLs: the site's 404 page with HTTP 404.
+- Google Analytics: in the HTML of tools pages only (0 references on `/discover` and `/family`). In a browser on whatamiai.com, opening Discover from the tools menu was a full page load with no `gtag`, no `dataLayer` and no Google requests.
+- robots.txt disallows `/saved`, `/person/`, `/family`, `/timeline`, `/stories`, `/book`, `/example`; the sitemap adds `/discover`.
+- Live Discover run with a made-up person: 23 places to look; the Library of Congress search returned 3 pages from the whatamiai.com origin (about 50 seconds: their API is slow; the page says so and offers Cancel).
+
 ## Checks
 
-`npm test` (vitest, 361 tests), `npm run typecheck`, `npm run build` (27 routes). No lint step is configured in this project. Browser checks of the production build: see the session notes in `~/WatchedNotWatched/whatamiai-family-pages-2026-11-19/`.
+`npm test` (vitest, 361 tests: 305 tools, 56 family history incl. Discover and the two-experience guards), `npm run typecheck`, `npm run build` (27 routes). No lint step is configured in this project. The production build was walked in a browser at desktop width and 390px: home, both menus, Discover (plan, keep, newspaper search, save as possible match), person page, My Family, timeline, stories, book, Your data, example family, About, Saved, My Situation, Money Check, 404, light mode. Session notes: `~/WatchedNotWatched/whatamiai-family-pages-2026-11-19/`.
+
+## Known limits
+
+- The Library of Congress search takes 14–60 seconds; FamilySearch and National Archives search inside the app need their approvals (links work today).
+- Families live in one browser; no accounts or sync. People must download backups (Your data says so).
+- Tools pages download a 1.2 KB family script chunk (the section tabs) that they never render; harmless Next.js chunk sharing between the two root layouts. Family pages never get the tools' layout chunk.
+- The 404 page's share-image URL resolves through Vercel's default domain rather than `metadataBase` (Next.js warning at build time); share images for real pages are correct.
 
 ## Resume
 
