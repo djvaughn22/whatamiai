@@ -11,14 +11,17 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const app = join(__dirname, "../..");
-const layout = readFileSync(join(app, "layout.tsx"), "utf8");
+// Two root layouts (reflection tools, family history); both render the footer.
+const layouts = ["(tools)", "(family)"].map((g) => readFileSync(join(app, g, "layout.tsx"), "utf8"));
 const footer = readFileSync(join(app, "OpenMirrorFooter.tsx"), "utf8");
-const about = readFileSync(join(__dirname, "../../about/page.tsx"), "utf8");
+const about = readFileSync(join(app, "(tools)", "about", "page.tsx"), "utf8");
 
 describe("family footer standard", () => {
-  it("root layout renders the shared footer with the default own-About route", () => {
-    expect(layout).toContain("<OpenMirrorFooter />");
-    expect(layout).not.toMatch(/<OpenMirrorFooter\s+\w/);
+  it("both root layouts render the shared footer with the default own-About route", () => {
+    for (const layout of layouts) {
+      expect(layout).toContain("<OpenMirrorFooter />");
+      expect(layout).not.toMatch(/<OpenMirrorFooter\s+\w/);
+    }
   });
 
   it("line one: OpenMirrorLLC.com · own About · CrossHeartPray icons", () => {

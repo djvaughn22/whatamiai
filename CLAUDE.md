@@ -8,11 +8,20 @@ Secular self-reflection, seven modes, all local + deterministic. Accent: **#E879
 - **Privacy is a feature:** pasted prompts live in sessionStorage only; drafts/saves in localStorage; answers never in URLs, logs, or analytics. Safety regexes (`app/lib/safety.ts`) interrupt with crisis resources — keep them ahead of reflection output.
 - No labels/boxes for the user; bridges to CrossHeartPray for the faith version.
 
+## Family history (since 2026-11-19; from branch `rebuild/family-history`)
+Two products beside the tools: **Discover** (`/discover`: type a name, year and place, see where that person's records are likely kept, search Library of Congress newspapers; nothing saved unless they choose "Keep in My Family") and **My Family** (`/family`: the evidence-first tree, plus `/person/[id]`, `/timeline`, `/stories`, `/book`, `/family/data`, `/example`). Details: docs/ARCHITECTURE.md, docs/PRIVACY-SECURITY.md, docs/RESEARCH.md, HANDOFF.md.
+- **Two root layouts, never one:** `app/(tools)/layout.tsx` (reflection tools, keeps Google Analytics) and `app/(family)/layout.tsx` (family history, NO analytics, ever). Moving between them is a full page load, which is what keeps GA off family pages. Don't add `app/layout.tsx`; don't import `next/script` or analytics into anything family. Both menus come from `app/lib/siteNav.ts`. `app/lib/__tests__/twoExperiences.test.ts` guards all of this.
+- **Product rules (never break):** never invent ancestors, dates, places, relationships or records. Every fact's label comes from attached citations (`app/lib/family/evidence.ts`): Verified, Supported, Family memory, Possible match, Records disagree, No source yet. Other people's trees and AI chats never lift a fact above Possible match. No numeric confidence. Stories use only recorded facts, quote memories as memories, and never write feelings, dialogue or scenes. Discover's typed facts are kept as "No source yet".
+- **Data:** IndexedDB in the visitor's browser (`app/lib/family/store.ts`); every edit is a pure op returning a Patch (`app/lib/family/ops.ts`). The tools' localStorage keys and the family IndexedDB never touch each other, and neither erase removes the other's data.
+- **Privacy:** family pages are noindex; living people private by default (`app/lib/family/living.ts`); page titles generic; never put a person's name in a title or a WhatAmIAI URL.
+- **The owner's own family is never in this repo or on the site.** The repo is PUBLIC. Use the made-up example family (`app/lib/family/example.ts`) in demos and tests, and grep for the owner's family names (list in the private notes) before every commit.
+- **Left out on purpose:** the rebuild's Pricing page (no-money-copy rule, plans not open) and its `/earlier` page (the tools were not retired). Both stay on branch `rebuild/family-history`.
+
 ## Open Mirror family rules
 - One of 11 Open Mirror LLC sites (hub: openmirrorllc.com, repo djvaughn22/open-mirror). Baseline tag: `mvp-1`.
 - **Design:** flat + cool. bg `#0b1220`, surface `#141d2e`, border `#26324c`, text `#e8edf5`, muted `#94a3b8`. No glass, no gradients, **no red**.
 - **Shared chrome is SYNCED, not owned here:** `OpenMirrorNav.tsx`, `OpenMirrorFooter.tsx`, `OpenMirrorTheme.tsx` in the app folder are copies from the hub repo `packages/openmirror-ui/`. NEVER edit them here — edit in the hub, run its `scripts/sync-ui.sh`, then rebuild/commit each satellite.
-- Nav + footer mount in `layout.tsx`. Footer = OPEN MIRROR LLC · ABOUT · ✝️ ❤️ 🙏 (the icons ARE the CrossHeartPray link — no word).
+- Nav + footer mount in both root layouts (`app/(tools)/layout.tsx`, `app/(family)/layout.tsx`) and `app/global-not-found.tsx`. Footer = OPEN MIRROR LLC · ABOUT · ✝️ ❤️ 🙏 (the icons ARE the CrossHeartPray link — no word).
 - ☀️/🌙 family toggle (`om-theme`) lives in the bar; pages that compute JS colors follow the `om-theme` window event.
 - **Copy style:** DJ's words. Short, plain, human. Never wordy or AI-sounding.
 - **Deploys:** push to `main` = production deploy (Vercel). Batch related edits into one commit.

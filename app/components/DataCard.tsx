@@ -57,10 +57,10 @@ export default function DataCard({ pal, onChange }: { pal: Palette; onChange: ()
   };
 
   const erase = () => {
-    if (!window.confirm("Erase everything WhatAmIAI keeps in this browser — saved reflections, streak, phone week, and unfinished answers? This can't be undone. Download a backup first if you might want it.")) return;
+    if (!window.confirm("Erase everything the reflection tools keep in this browser — saved reflections, streak, phone week, and unfinished answers? Your family tree isn't affected. This can't be undone. Download a backup first if you might want it.")) return;
     try {
       eraseAll(localStorage, sessionStorage);
-      setMsg("Erased. Nothing from WhatAmIAI is left in this browser.");
+      setMsg("Erased. Nothing from the reflection tools is left in this browser.");
     } catch {
       setMsg("This browser blocked the erase. Try clearing site data in your browser settings.");
     }
