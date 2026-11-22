@@ -31,15 +31,30 @@ const GROUPS: { title: string; tools: Tool[] }[] = [
       { href: "/phone", emoji: "📵", name: "Intentional Phone Use", time: "7 small days", text: "Pick the one thing you'd like to use your phone less for, then take it a day at a time." },
     ],
   },
-  {
-    // The family history pages (app/(family)) have their own layout and no analytics.
-    title: "Family history",
-    tools: [
-      { href: "/discover", emoji: "🔎", name: "Discover", time: "A name and a place", text: "See where one person's records are likely kept, and search old newspapers for them." },
-      { href: "/family", emoji: "🌳", name: "My Family", time: "Kept in this browser", text: "Build your family tree. Every fact shows whether a record proves it, the family remembers it, or it's still a question." },
-    ],
-  },
 ];
+
+// Family history sits right under the hero (preview, Nov 22 2026). Its pages
+// (app/(family)) have their own layout and no analytics.
+function FamilyBand({ pal }: { pal: Palette }) {
+  const door = { display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 44, padding: "0 18px", borderRadius: 50, fontWeight: 900, fontSize: 15, textDecoration: "none", boxSizing: "border-box" as const };
+  return (
+    <section aria-labelledby="family-band" style={{ background: pal.card, border: `1px solid ${pal.border}`, borderRadius: 18, padding: "18px 18px 16px", marginBottom: 28 }}>
+      <h2 id="family-band" style={{ fontSize: 19, fontWeight: 900, color: pal.text, margin: "0 0 6px" }}>
+        <span aria-hidden>🌳 </span>Family history
+      </h2>
+      <p style={{ fontSize: 14.5, color: pal.sub, lineHeight: 1.55, margin: "0 0 14px" }}>
+        Find where a relative&apos;s records are kept, build your family tree with the evidence showing, and ask the family what they remember.
+      </p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+        <a href="/discover" style={{ ...door, background: pal.brand, color: pal.ink }}>Look up one person</a>
+        <a href="/family" style={{ ...door, border: `1px solid ${pal.border}`, color: pal.text }}>Start your family tree</a>
+      </div>
+      <a href="/ask" style={{ display: "inline-flex", alignItems: "center", minHeight: 44, marginTop: 6, color: pal.accentText, fontWeight: 800, fontSize: 14.5, textDecoration: "none" }}>
+        Questions to ask a relative →
+      </a>
+    </section>
+  );
+}
 
 type Resume = { href: string; label: string; detail: string };
 
@@ -103,6 +118,8 @@ export default function Home() {
         </a>
         <p style={{ fontSize: 13.5, color: pal.sub, margin: "10px 0 0" }}>About a minute. No sign-up.</p>
       </section>
+
+      <FamilyBand pal={pal} />
 
       {resume.length > 0 && (
         <Card pal={pal} accent style={{ marginBottom: 28 }}>

@@ -24,6 +24,7 @@ export const FAMILY_PRODUCTS: OmNavLink[] = [
 
 export const FAMILY_LINKS: OmNavLink[] = [
   ...FAMILY_PRODUCTS,
+  { emoji: "🗣️", name: "Ask a relative", href: "/ask", note: "Questions that bring out the stories" },
   { emoji: "🗓️", name: "Timeline", href: "/timeline", note: "Your family's lives in order, with history beside them" },
   { emoji: "📖", name: "Stories", href: "/stories", note: "Stories and a printable book, with sources" },
   { emoji: "💾", name: "Your data", href: "/family/data", note: "Import, export, back up, erase" },

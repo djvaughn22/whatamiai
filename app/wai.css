@@ -225,10 +225,12 @@ details.w-more[open] > summary::before { content: "▾ "; }
 
 /* Print: the book and stories print as clean pages */
 @media print {
-  .w-sections, .w-example-bar, .w-no-print, .w-tabs { display: none !important; }
+  .om-bar, .w-sections, .w-example-bar, .w-no-print, .w-tabs { display: none !important; }
   .w-page, .w-read { max-width: none; padding: 0; }
   .w-story, .w-book { color: #111 !important; }
   .w-badge { border-color: #555 !important; color: #333 !important; }
   .w-book-page { break-before: page; }
+  .w-ask-q { break-inside: avoid; }
+  .w-ask-q::after { content: ""; display: block; height: 3.2em; border-bottom: 1px solid #999; }
   a { color: #111 !important; text-decoration: none; }
 }

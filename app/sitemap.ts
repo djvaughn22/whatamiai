@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
 // /saved is personal (on-device reflections) and stays out, and so does every
 // family history page except Discover (see robots.ts).
 const BASE = "https://whatamiai.com";
-export const PUBLIC_PATHS = ["/", "/about", "/situation", "/money", "/habits", "/phone", "/react", "/mirror", "/patterns", "/discover"] as const;
+export const PUBLIC_PATHS = ["/", "/about", "/situation", "/money", "/habits", "/phone", "/react", "/mirror", "/patterns", "/discover", "/ask"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PUBLIC_PATHS.map((p) => ({ url: `${BASE}${p === "/" ? "" : p}`, changeFrequency: "monthly", priority: p === "/" ? 1 : 0.7 }));
