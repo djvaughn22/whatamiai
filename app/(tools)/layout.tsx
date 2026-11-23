@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   // claim to be the home page. Previews fall back to each page's own title.
   openGraph: { type: "website", siteName: "WhatAmIAI" },
   twitter: { card: "summary_large_image" },
+  // Google Search Console ownership for https://whatamiai.com/ (Nov 22 2026), checked on the
+  // home page, which uses this layout. Public by design; removing it un-verifies the property.
+  // Not analytics: it sends nothing. The family layout stays untouched.
+  verification: { google: "1pnVxOdITarX-R5uy7dZe_74terIhc6I2xLehz2t_GA" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
