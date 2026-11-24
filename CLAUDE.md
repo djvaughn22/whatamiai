@@ -18,6 +18,7 @@ Two products beside the tools: **Discover** (`/discover`: type a name, year and 
 - **Left out on purpose:** the rebuild's Pricing page (no-money-copy rule, plans not open) and its `/earlier` page (the tools were not retired). Both stay on branch `rebuild/family-history`.
 
 ## Open Mirror family rules
+- **Messaging (owner, 2026-11-24):** WhatAmIAI is family history, ancestry and personal discovery, in its own voice. No plugs for other Open Mirror sites (no PleaseBeReady tie-in), no preparedness copy, no Open Mirror story; About keeps one line saying it is an Open Mirror LLC project. Full rules: the hub repo's `docs/MESSAGING.md`.
 - One of 11 Open Mirror LLC sites (hub: openmirrorllc.com, repo djvaughn22/open-mirror). Baseline tag: `mvp-1`.
 - **Design:** flat + cool. bg `#0b1220`, surface `#141d2e`, border `#26324c`, text `#e8edf5`, muted `#94a3b8`. No glass, no gradients, **no red**.
 - **Shared chrome is SYNCED, not owned here:** `OpenMirrorNav.tsx`, `OpenMirrorFooter.tsx`, `OpenMirrorTheme.tsx` in the app folder are copies from the hub repo `packages/openmirror-ui/`. NEVER edit them here — edit in the hub, run its `scripts/sync-ui.sh`, then rebuild/commit each satellite.
