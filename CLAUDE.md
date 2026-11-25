@@ -26,3 +26,4 @@ Two products beside the tools: **Discover** (`/discover`: type a name, year and 
 - ☀️/🌙 family toggle (`om-theme`) lives in the bar; pages that compute JS colors follow the `om-theme` window event.
 - **Copy style:** DJ's words. Short, plain, human. Never wordy or AI-sounding.
 - **Deploys:** push to `main` = production deploy (Vercel). Batch related edits into one commit.
+- **Owner reset (2026-11-25):** WhatAmIAI is family history, ancestry and personal discovery; search and share text say so first. Keep the shared footer's OpenMirrorLLC.com link (the one way to find the other sites). The name stays; describe AI only where a tool really works with it (My AI Mirror, copy-to-your-AI prompts), with its privacy note. No public prices; questions go to ask@openmirrorllc.com.

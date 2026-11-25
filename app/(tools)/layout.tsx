@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s | WhatAmIAI",
   },
   description:
-    "Short tap-to-answer tools for thinking through a decision, your money, how you react, a habit, or your phone. Each ends with one small next step you can save or print.",
+    "Family history and personal discovery: find where an ancestor's records are kept and build your tree with the evidence showing, plus short tools for thinking through a decision, your money or a habit.",
   // Link previews in texts and chats. The picture is app/opengraph-image.tsx.
   // No og:title/url here: set at the root they'd make every page's preview
   // claim to be the home page. Previews fall back to each page's own title.

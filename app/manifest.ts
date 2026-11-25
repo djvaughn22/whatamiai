@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "WhatAmIAI",
     short_name: "WhatAmIAI",
     description:
-      "Short tap-to-answer tools for a decision, your money, how you react, a habit, or your phone. Each ends with one small next step.",
+      "Family history and personal discovery: find records, build your tree with the evidence showing, and think through a decision or a habit.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
